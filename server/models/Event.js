@@ -2,40 +2,15 @@ const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true
-    },
-
+    title: { type: String, required: true, trim: true },
     category: {
       type: String,
-      enum: [
-        "Dance",
-        "Concert",
-        "Lunch",
-        "Urgent Meeting",
-        "Festival",
-        "Casual Gathering"
-      ],
+      enum: ["Dance", "Concert", "Lunch", "Urgent Meeting", "Festival", "Casual Gathering"],
       required: true
     },
-
-    description: {
-      type: String,
-      trim: true
-    },
-
-    eventDateTime: {
-      type: Date,
-      required: true
-    },
-
-    venue: {
-      type: String,
-      trim: true
-    },
-
+    description: { type: String, trim: true },
+    eventDateTime: { type: Date, required: true },
+    venue: { type: String, trim: true },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

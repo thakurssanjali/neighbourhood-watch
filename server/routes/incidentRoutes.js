@@ -1,114 +1,76 @@
 const express = require("express");
-const router = express.Router();
-
 const Incident = require("../models/Incident");
 const authMiddleware = require("../middleware/authMiddleware");
 const adminMiddleware = require("../middleware/adminMiddleware");
 
-/**
- * POST – Report an Incident (USER)
- */
+const router = express.Router();
+
+// Report incident
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const incident = new Incident({
+    const incident = await Incident.create({
       ...req.body,
       reportedBy: req.user.id
     });
-
-    await incident.save();
     res.status(201).json(incident);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to report incident"
-    });
+    res.status(500).json({ message: "Failed to report incident" });
   }
 });
 
-/**
- * GET – Logged-in user's complaints (USER)
- */
+// Get user's incidents
 router.get("/my", authMiddleware, async (req, res) => {
   try {
-    const incidents = await Incident.find({
-      reportedBy: req.user.id
-    }).sort({ createdAt: -1 });
-
+    const incidents = await Incident.find({ reportedBy: req.user.id }).sort({
+      createdAt: -1
+    });
     res.json(incidents);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch your complaints"
-    });
+    res.status(500).json({ message: "Failed to fetch incidents" });
   }
 });
 
-/**
- * GET – All complaints (ADMIN)
- */
+// Get all incidents (admin)
 router.get("/", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const incidents = await Incident.find()
       .populate("reportedBy", "name phone society houseNumber")
       .sort({ createdAt: -1 });
-
     res.json(incidents);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch complaints"
-    });
+    res.status(500).json({ message: "Failed to fetch incidents" });
   }
 });
 
-/**
- * PUT – Update incident status (ADMIN)
- */
+// Update incident (admin)
 router.put("/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    const { status, remarks } = req.body;
-
-    const updatedIncident = await Incident.findByIdAndUpdate(
-      req.params.id,
-      { status, remarks },
-      { new: true }
-    );
-
-    res.json(updatedIncident);
-  } catch (error) {
-    res.status(500).json({
-      message: "Update failed"
+    const incident = await Incident.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
     });
+    res.json(incident);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update incident" });
   }
 });
 
-/**
- * DELETE – Delete incident (ADMIN)
- */
+// Delete incident (admin)
 router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     await Incident.findByIdAndDelete(req.params.id);
-    res.json({
-      message: "Incident deleted"
-    });
+    res.json({ message: "Incident deleted" });
   } catch (error) {
-    res.status(500).json({
-      message: "Delete failed"
-    });
+    res.status(500).json({ message: "Failed to delete incident" });
   }
 });
 
-/**
- * GET – Public incidents (NO AUTH)
- */
+// Public incidents (no auth)
 router.get("/public", async (req, res) => {
   try {
-    const incidents = await Incident.find()
-      .sort({ createdAt: -1 })
-      .select("title status remarks createdAt");
-
+    const incidents = await Incident.find().sort({ createdAt: -1 });
     res.json(incidents);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch public incidents"
-    });
+    res.status(500).json({ message: "Failed to fetch incidents" });
   }
 });
 
