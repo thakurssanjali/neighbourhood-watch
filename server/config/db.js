@@ -26,12 +26,18 @@ const connectDB = async () => {
   try {
     console.log("🔌 Attempting to connect to MongoDB...");
     console.log("📍 Connection string exists:", !!process.env.MONGODB_URI);
+    console.log("📍 Environment:", process.env.NODE_ENV);
     
-    // Optimize for serverless with connection pooling
+    // Optimize for serverless with connection pooling and SSL options
     const options = {
       maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
+      minPoolSize: 2,
+      serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
+      retryWrites: true,
+      w: "majority",
+      ssl: true,
+      tlsAllowInvalidCertificates: process.env.NODE_ENV === "production" ? false : true,
     };
 
     await mongoose.connect(process.env.MONGODB_URI, options);

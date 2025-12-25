@@ -2,6 +2,10 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 
+console.log("🚀 Server starting...");
+console.log("📍 Node version:", process.version);
+console.log("📍 Current environment:", process.env.NODE_ENV || "development");
+
 // Load environment variables
 // In development, load from .env.local
 // In production (Render), environment variables are set in Render dashboard
