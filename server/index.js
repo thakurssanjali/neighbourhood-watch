@@ -1,7 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
+
+// Load environment variables
+// In development, load from .env.local
+// In production (Render), environment variables are set in Render dashboard
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
+}
 
 const connectDB = require("./config/db");
 
