@@ -4,9 +4,12 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : "http://localhost:5000/api";
+// API URL Configuration
+const API_BASE_URL = import.meta.env.PROD
+  ? "/api"  // Production: relative path on Vercel
+  : import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "http://localhost:5000/api"; // Development: localhost
 
 function ForgotPassword() {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import axios from "axios";
+import { authAPI } from "../services/api";
 import Navbar from "../components/Navbar";
 
 function Register() {
@@ -35,7 +35,7 @@ function Register() {
         return;
       }
 
-      await axios.post("http://localhost:5000/api/auth/register", formData);
+      await authAPI.register(formData);
       alert("Registration successful! Please login.");
       navigate("/login");
     } catch (err) {

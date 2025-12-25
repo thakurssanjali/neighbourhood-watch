@@ -3,9 +3,12 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : "http://localhost:5000/api";
+// API URL Configuration
+const API_BASE_URL = import.meta.env.PROD
+  ? "/api"  // Production: relative path on Vercel
+  : import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "http://localhost:5000/api"; // Development: localhost
 
 function Contact() {
   const [message, setMessage] = useState("");

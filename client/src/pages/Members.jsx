@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : "http://localhost:5000/api";
+// API URL Configuration
+const API_BASE_URL = import.meta.env.PROD
+  ? "/api"  // Production: relative path on Vercel
+  : import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api`
+    : "http://localhost:5000/api"; // Development: localhost
 
 function Members() {
   const [members, setMembers] = useState([]);
@@ -34,7 +37,7 @@ function Members() {
             <div className="overflow-hidden rounded-3xl bg-white/95 backdrop-blur-xl shadow-2xl">
               {/* Gradient header */}
               <div className="h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
-              
+
               <div className="p-12">
                 <div className="flex items-start justify-between mb-4">
                   <div>
