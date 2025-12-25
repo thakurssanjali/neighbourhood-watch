@@ -1,14 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-
-// API URL Configuration
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://neighbourhood-watch-api.onrender.com/api"  // Production: Render backend
-  : import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:5000/api"; // Development: localhost
+import { userAPI, guidelineAPI, eventAPI } from "../services/api";
 
 const EVENT_GIFS = {
   Dance: "/images/event-gifs/dance.gif",
@@ -35,17 +28,14 @@ function Home() {
   const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/guidelines/public`)
+    guidelineAPI.getPublic()
       .then((res) => setGuidelines(res.data))
       .catch(() => console.error("Failed to load guidelines"))
       .finally(() => setLoadingGuidelines(false));
-
   }, []);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/users/public`)
+    userAPI.getAll()
       .then((res) => setMembers(res.data))
       .catch(() => console.error("Failed to load members"));
   }, []);
@@ -65,8 +55,7 @@ function Home() {
 
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/events/public`)
+    eventAPI.getPublic()
       .then((res) => setCalendarEvents(res.data))
       .catch(() => setCalendarEvents([]));
   }, []);

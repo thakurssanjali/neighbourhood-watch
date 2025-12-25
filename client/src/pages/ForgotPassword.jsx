@@ -2,14 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Navbar from "../components/Navbar";
-import axios from "axios";
-
-// API URL Configuration
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://neighbourhood-watch-api.onrender.com/api"  // Production: Render backend
-  : import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:5000/api"; // Development: localhost
+import api from "../services/api";
 
 function ForgotPassword() {
   const navigate = useNavigate();
@@ -41,7 +34,7 @@ function ForgotPassword() {
     }
 
     try {
-      await axios.post(`${API_BASE_URL}/password/forgot-password`, {
+      await api.post("/password/forgot-password", {
         phone: formData.phone,
         newPassword: formData.newPassword,
         reason: formData.reason || "User requested password reset"

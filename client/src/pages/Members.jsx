@@ -1,21 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Navbar from "../components/Navbar";
-
-// API URL Configuration
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://neighbourhood-watch-api.onrender.com/api"  // Production: Render backend
-  : import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:5000/api"; // Development: localhost
+import { userAPI } from "../services/api";
 
 function Members() {
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/users/public`)
+    userAPI.getAll()
       .then((res) => setMembers(res.data))
       .catch(() => setMembers([]))
       .finally(() => setLoading(false));

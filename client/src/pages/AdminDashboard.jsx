@@ -1,14 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api, { incidentAPI, eventAPI, guidelineAPI, contactAPI } from "../services/api";
 import Navbar from "../components/Navbar";
-
-// API URL Configuration
-const API_BASE_URL = import.meta.env.PROD
-  ? "https://neighbourhood-watch-api.onrender.com/api"  // Production: Render backend
-  : import.meta.env.VITE_API_URL
-    ? `${import.meta.env.VITE_API_URL}/api`
-    : "http://localhost:5000/api"; // Development: localhost
 
 function AdminDashboard() {
   const token = localStorage.getItem("token");
@@ -37,118 +30,80 @@ function AdminDashboard() {
   // Fetch functions wrapped in useCallback
   const fetchIncidents = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/incidents`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const res = await incidentAPI.getAll();
       setIncidents(res.data);
     } catch {
       alert("Failed to fetch incidents");
     }
-  }, [token]);
+  }, []);
 
   const fetchEvents = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/events`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await eventAPI.getAll();
       setEvents(res.data);
     } catch {
       alert("Failed to fetch events");
     }
-  }, [token]);
+  }, []);
 
   const fetchGuidelines = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/guidelines/public`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await guidelineAPI.getPublic();
       setGuidelinesList(res.data);
     } catch {
       alert("Failed to fetch guidelines");
     }
-  }, [token]);
+  }, []);
 
   const fetchMessages = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/contact`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const res = await contactAPI.getAll();
       setMessages(res.data);
     } catch {
       alert("Failed to load messages");
     }
-  }, [token]);
+  }, []);
 
   const fetchResetRequests = useCallback(async () => {
     try {
-      const res = await axios.get(
-        `${API_BASE_URL}/password/reset-requests`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const res = await api.get("/password/reset-requests");
       setResetRequests(res.data);
     } catch (err) {
       console.error("Failed to fetch reset requests:", err.message);
     }
-  }, [token]);
+  }, []);
 
   // Action handlers
   const updateIncident = useCallback(async (id, status) => {
     try {
-      await axios.put(
-        `${API_BASE_URL}/incidents/${id}`,
-        {
-          status,
-          remarks: remarksMap[id] || ""
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await incidentAPI.update(id, {
+        status,
+        remarks: remarksMap[id] || ""
+      });
       await fetchIncidents();
     } catch {
       alert("Failed to update incident");
     }
-  }, [token, remarksMap, fetchIncidents]);
+  }, [remarksMap, fetchIncidents]);
 
   const deleteIncident = useCallback(async (id) => {
     try {
-      await axios.delete(
-        `${API_BASE_URL}/incidents/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await incidentAPI.delete(id);
       await fetchIncidents();
     } catch {
       alert("Failed to delete incident");
     }
-  }, [token, fetchIncidents]);
+  }, [fetchIncidents]);
 
   const createEvent = useCallback(async () => {
     try {
-      await axios.post(
-        `${API_BASE_URL}/events`,
-        {
-          title: eventData.title,
-          category: eventData.category,
-          venue: eventData.venue,
-          description: eventData.description,
-          eventDateTime: eventData.eventDateTime
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await eventAPI.create({
+        title: eventData.title,
+        category: eventData.category,
+        venue: eventData.venue,
+        description: eventData.description,
+        eventDateTime: eventData.eventDateTime
+      });
 
       alert("Event posted successfully");
       setEventData({
@@ -166,7 +121,7 @@ function AdminDashboard() {
         alert("Failed to add event");
       }
     }
-  }, [token, eventData, fetchEvents]);
+  }, [eventData, fetchEvents]);
 
   const handleEventChange = (e) => {
     setEventData({ ...eventData, [e.target.name]: e.target.value });
@@ -174,15 +129,12 @@ function AdminDashboard() {
 
   const deleteEvent = useCallback(async (id) => {
     try {
-      await axios.delete(
-        `${API_BASE_URL}/events/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await eventAPI.delete(id);
       await fetchEvents();
     } catch {
       alert("Failed to delete event");
     }
-  }, [token, fetchEvents]);
+  }, [fetchEvents]);
 
   const postGuideline = useCallback(async () => {
     try {
@@ -190,18 +142,12 @@ function AdminDashboard() {
         `${guideline.date}T${guideline.time}`
       );
 
-      await axios.post(
-        `${API_BASE_URL}/guidelines`,
-        {
-          title: guideline.title,
-          venue: guideline.venue,
-          description: guideline.description,
-          eventDateTime
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await guidelineAPI.create({
+        title: guideline.title,
+        venue: guideline.venue,
+        description: guideline.description,
+        eventDateTime
+      });
 
       alert("Guideline posted successfully");
 
@@ -217,16 +163,13 @@ function AdminDashboard() {
       console.error(err.response?.data || err.message);
       alert("Failed to post guideline");
     }
-  }, [token, guideline, fetchGuidelines]);
+  }, [guideline, fetchGuidelines]);
 
   const deleteGuideline = useCallback(async (id) => {
     if (!window.confirm("Delete this community update?")) return;
 
     try {
-      await axios.delete(
-        `${API_BASE_URL}/guidelines/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await guidelineAPI.delete(id);
 
       setGuidelinesList(
         guidelinesList.filter((g) => g._id !== id)
@@ -234,21 +177,16 @@ function AdminDashboard() {
     } catch {
       alert("Failed to delete guideline");
     }
-  }, [token, guidelinesList]);
+  }, [guidelinesList]);
 
   const deleteMessage = useCallback(async (id) => {
     try {
-      await axios.delete(
-        `${API_BASE_URL}/contact/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await contactAPI.delete(id);
       await fetchMessages();
     } catch {
       alert("Failed to delete message");
     }
-  }, [token, fetchMessages]);
+  }, [fetchMessages]);
 
   // useEffect to load data
   useEffect(() => {
@@ -722,10 +660,9 @@ function AdminDashboard() {
                                   <button
                                     onClick={async () => {
                                       try {
-                                        await axios.put(
-                                          `${API_BASE_URL}/password/reset-requests/${req._id}/approve`,
-                                          { remarks: remarks },
-                                          { headers: { Authorization: `Bearer ${token}` } }
+                                        await api.put(
+                                          `/password/reset-requests/${req._id}/approve`,
+                                          { remarks: remarks }
                                         );
                                         alert("Request approved");
                                         fetchResetRequests();
@@ -741,10 +678,9 @@ function AdminDashboard() {
                                     onClick={async () => {
                                       const remarks = prompt("Rejection reason (optional):");
                                       try {
-                                        await axios.put(
-                                          `${API_BASE_URL}/password/reset-requests/${req._id}/reject`,
-                                          { remarks: remarks },
-                                          { headers: { Authorization: `Bearer ${token}` } }
+                                        await api.put(
+                                          `/password/reset-requests/${req._id}/reject`,
+                                          { remarks: remarks }
                                         );
                                         alert("Request rejected");
                                         fetchResetRequests();
