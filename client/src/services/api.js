@@ -1,10 +1,10 @@
 import axios from "axios";
 
 // API URL Configuration for Vercel deployment
-// In production (Vercel), use relative path to serverless functions
+// In production (Vercel), use the Render backend API
 // In development, use localhost
 const API_BASE_URL = import.meta.env.PROD 
-  ? "/api"  // Production: relative path on Vercel
+  ? "https://neighbourhood-watch-api.onrender.com/api"  // Production: Render backend
   : import.meta.env.VITE_API_URL 
     ? `${import.meta.env.VITE_API_URL}/api` 
     : "http://localhost:5000/api"; // Development: localhost

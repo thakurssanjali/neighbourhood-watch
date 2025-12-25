@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 
 // API URL Configuration
 const API_BASE_URL = import.meta.env.PROD
-  ? "/api"  // Production: relative path on Vercel
+  ? "https://neighbourhood-watch-api.onrender.com/api"  // Production: Render backend
   : import.meta.env.VITE_API_URL
     ? `${import.meta.env.VITE_API_URL}/api`
     : "http://localhost:5000/api"; // Development: localhost
@@ -372,12 +372,12 @@ function Home() {
           <div className="w-full max-w-3xl overflow-hidden bg-white shadow-2xl rounded-2xl animate-fadeInUp">
             {/* HEADER WITH GRADIENT */}
             <div className={`p-6 text-white relative ${activeStatus === "Total"
-                ? "bg-gradient-to-r from-blue-600 to-blue-800"
-                : activeStatus === "Pending"
-                  ? "bg-gradient-to-r from-yellow-500 to-yellow-700"
-                  : activeStatus === "Actioning"
-                    ? "bg-gradient-to-r from-orange-500 to-orange-700"
-                    : "bg-gradient-to-r from-green-600 to-green-800"
+              ? "bg-gradient-to-r from-blue-600 to-blue-800"
+              : activeStatus === "Pending"
+                ? "bg-gradient-to-r from-yellow-500 to-yellow-700"
+                : activeStatus === "Actioning"
+                  ? "bg-gradient-to-r from-orange-500 to-orange-700"
+                  : "bg-gradient-to-r from-green-600 to-green-800"
               }`}>
               <button
                 onClick={() => setActiveStatus(null)}
@@ -407,20 +407,20 @@ function Home() {
                   <div
                     key={incident._id}
                     className={`border-l-4 bg-gradient-to-r p-5 rounded-lg hover:shadow-md transition-all ${incident.status === "Pending"
-                        ? "border-yellow-500 from-yellow-50 to-transparent"
-                        : incident.status === "Actioning"
-                          ? "border-orange-500 from-orange-50 to-transparent"
-                          : "border-green-500 from-green-50 to-transparent"
+                      ? "border-yellow-500 from-yellow-50 to-transparent"
+                      : incident.status === "Actioning"
+                        ? "border-orange-500 from-orange-50 to-transparent"
+                        : "border-green-500 from-green-50 to-transparent"
                       }`}
                   >
                     {/* HEADER WITH STATUS BADGE */}
                     <div className="flex items-start justify-between mb-3">
                       <div>
                         <span className={`inline-block px-3 py-1 text-xs font-bold text-white rounded-full mb-2 ${incident.status === "Pending"
-                            ? "bg-yellow-500"
-                            : incident.status === "Actioning"
-                              ? "bg-orange-500"
-                              : "bg-green-500"
+                          ? "bg-yellow-500"
+                          : incident.status === "Actioning"
+                            ? "bg-orange-500"
+                            : "bg-green-500"
                           }`}>
                           {incident.status}
                         </span>
