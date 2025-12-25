@@ -10,7 +10,23 @@ const connectDB = async () => {
     return;
   }
 
+  // Validate required environment variables
+  if (!process.env.MONGODB_URI) {
+    const error = new Error("MONGODB_URI environment variable is not set");
+    console.error("❌ " + error.message);
+    throw error;
+  }
+
+  if (!process.env.JWT_SECRET) {
+    const error = new Error("JWT_SECRET environment variable is not set");
+    console.error("❌ " + error.message);
+    throw error;
+  }
+
   try {
+    console.log("🔌 Attempting to connect to MongoDB...");
+    console.log("📍 Connection string exists:", !!process.env.MONGODB_URI);
+    
     // Optimize for serverless with connection pooling
     const options = {
       maxPoolSize: 10,

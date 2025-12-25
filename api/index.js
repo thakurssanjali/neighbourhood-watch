@@ -36,12 +36,20 @@ const ensureDbConnection = async () => {
 app.use(cors());
 app.use(express.json());
 
+// Logging middleware to debug requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
 // API Routes Documentation
 app.get("/api", (req, res) => {
   res.json({
     message: "Welcome to Neighbourhood Watch API",
     version: "1.0.0",
     environment: "Vercel Serverless",
+    hasMongodbUri: !!process.env.MONGODB_URI,
+    hasJwtSecret: !!process.env.JWT_SECRET,
     routes: {
       auth: {
         register: "POST /api/auth/register",
