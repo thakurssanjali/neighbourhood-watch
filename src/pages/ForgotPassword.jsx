@@ -56,36 +56,36 @@ function ForgotPassword() {
   return (
     <>
       <Navbar />
-      <section className="relative flex items-center justify-center w-full min-h-screen px-6 pt-24 bg-center bg-cover bg-fixed"
+      <section className="relative flex items-center justify-center w-full min-h-screen px-3 md:px-6 pt-24 md:pt-32 bg-center bg-cover bg-fixed"
         style={{ backgroundImage: "url('/images/Login.webp')" }}>
         {/* DARK OVERLAY */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-transparent"></div>
 
         {/* FORM CARD */}
-        <div className="relative z-10 w-full max-w-md p-10 shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border border-white/20">
-          <h2 className="mb-2 text-3xl font-bold text-center text-gray-900">Reset Password</h2>
-          <p className="mb-6 text-sm text-center text-gray-700">
+        <div className="relative z-10 w-full max-w-md p-4 md:p-8 lg:p-10 shadow-2xl bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-3xl border border-white/20">
+          <h2 className="mb-2 text-2xl md:text-3xl font-bold text-center text-gray-900">Reset Password</h2>
+          <p className="mb-4 md:mb-6 text-xs md:text-sm text-center text-gray-700">
             Provide a new password. Admin will review and approve your request.
           </p>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-400 rounded-lg">
-              <p className="text-sm text-red-800 text-center">{error}</p>
+            <div className="mb-4 p-3 md:p-4 bg-red-100 border border-red-400 rounded-lg">
+              <p className="text-xs md:text-sm text-red-800 text-center">{error}</p>
             </div>
           )}
 
           {success && (
-            <div className="mb-4 p-3 bg-green-100 border border-green-400 rounded-lg">
-              <p className="text-sm text-green-800 text-center">
+            <div className="mb-4 p-3 md:p-4 bg-green-100 border border-green-400 rounded-lg">
+              <p className="text-xs md:text-sm text-green-800 text-center">
                 ✅ Request submitted! Redirecting to login in 3 seconds...
               </p>
             </div>
           )}
 
           {!success ? (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
               <div>
-                <label className="block mb-2 text-sm font-semibold text-gray-900">
+                <label className="block mb-2 text-xs md:text-sm font-semibold text-gray-900">
                   Phone Number
                 </label>
                 <input
@@ -95,12 +95,12 @@ function ForgotPassword() {
                   value={formData.phone}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90"
                 />
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-semibold text-gray-900">
+                <label className="block mb-2 text-xs md:text-sm font-semibold text-gray-900">
                   New Password
                 </label>
                 <div className="relative">
@@ -111,20 +111,20 @@ function ForgotPassword() {
                     value={formData.newPassword}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90"
+                    className="w-full px-3 md:px-4 py-2 md:py-3 pr-10 md:pr-12 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute text-gray-500 -translate-y-1/2 right-4 top-1/2 hover:text-gray-700"
+                    className="absolute text-gray-500 -translate-y-1/2 right-3 md:right-4 top-1/2 hover:text-gray-700"
                   >
-                    {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+                    {showPassword ? <EyeSlashIcon className="w-4 md:w-5 h-4 md:h-5" /> : <EyeIcon className="w-4 md:w-5 h-4 md:h-5" />}
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block mb-2 text-sm font-semibold text-gray-900">
+                <label className="block mb-2 text-xs md:text-sm font-semibold text-gray-900">
                   Reason (Optional)
                 </label>
                 <textarea
@@ -133,21 +133,21 @@ function ForgotPassword() {
                   value={formData.reason}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 resize-none"
+                  className="w-full px-3 md:px-4 py-2 md:py-3 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white/90 resize-none"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-2 md:py-3 text-sm md:text-base font-semibold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Submitting..." : "Submit Request"}
               </button>
             </form>
           ) : null}
 
-          <p className="mt-6 text-sm text-center text-gray-700">
+          <p className="mt-4 md:mt-6 text-xs md:text-sm text-center text-gray-700">
             Remember your password?{" "}
             <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700">
               Back to login

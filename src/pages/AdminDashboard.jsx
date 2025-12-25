@@ -216,23 +216,23 @@ function AdminDashboard() {
         {/* DARK OVERLAY */}
         <div className="min-h-screen bg-gradient-to-b from-black/60 via-black/50 to-black/40">
           {/* ================= HEADER ================= */}
-          <section className="relative px-6 pt-40 text-center pb-16">
+          <section className="relative px-4 md:px-6 pt-32 md:pt-40 text-center pb-12 md:pb-16">
             <div className="max-w-4xl mx-auto">
-              <h1 className="mb-2 text-5xl font-bold text-white drop-shadow-lg">
+              <h1 className="mb-2 text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
                 Admin Dashboard
               </h1>
-              <p className="text-lg text-gray-100 drop-shadow">
+              <p className="text-sm md:text-base lg:text-lg text-gray-100 drop-shadow px-2">
                 Review, manage, and resolve neighbourhood incidents
               </p>
             </div>
           </section>
 
           {/* ================= STATS ================= */}
-          <section className="px-6 mx-auto mt-16 max-w-7xl">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <section className="px-4 md:px-6 mx-auto mt-8 md:mt-16 max-w-7xl">
+            <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-3">
               {/* LEFT: STATS COLUMN */}
-              <div className="lg:col-span-1 space-y-6">
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+              <div className="lg:col-span-1 space-y-3 md:space-y-6">
+                <div className="grid grid-cols-2 gap-2 md:gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
                   <StatCard title="Total" value={incidents.length} color="text-blue-600" icon={Home} />
                   <StatCard title="Pending" value={pending.length} color="text-yellow-600" icon={Clock} />
                   <StatCard title="In Action" value={actioning.length} color="text-orange-600" icon={AlertCircle} />
@@ -242,18 +242,18 @@ function AdminDashboard() {
 
               {/* RIGHT: RECENT INCIDENTS COLUMN */}
               <div className="lg:col-span-2">
-                <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 h-full">
-                  <h2 className="mb-6 text-2xl font-bold text-gray-900">Recent Incidents</h2>
+                <div className="bg-white/95 backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 h-full">
+                  <h2 className="mb-4 md:mb-6 text-xl md:text-2xl font-bold text-gray-900">Recent Incidents</h2>
 
                   {incidents.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">No incidents available</p>
+                    <p className="text-center text-gray-500 text-sm md:text-base py-8">No incidents available</p>
                   ) : (
-                    <div className="space-y-4 max-h-[550px] overflow-y-auto pr-2">
+                    <div className="space-y-2 md:space-y-4 max-h-96 md:max-h-[550px] overflow-y-auto pr-1 md:pr-2">
                       {incidents.slice(0, 8).map((incident) => (
                         <div
                           key={incident._id}
                           onClick={() => setSelectedIncident(incident)}
-                          className="border-l-4 p-4 rounded-lg bg-gray-50 cursor-pointer"
+                          className="border-l-4 p-3 md:p-4 rounded-lg bg-gray-50 cursor-pointer"
                           style={{
                             borderColor: incident.status === "Pending"
                               ? "#eab308"
@@ -262,21 +262,21 @@ function AdminDashboard() {
                                 : "#22c55e"
                           }}
                         >
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <div className="flex-1">
-                              <h3 className="font-semibold text-gray-900">
+                          <div className="flex items-start justify-between gap-2 md:gap-3 mb-1 md:mb-2">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-gray-900 text-sm md:text-base truncate">
                                 {incident.title}
                               </h3>
-                              <p className="text-sm text-gray-600 mt-1">
+                              <p className="text-xs md:text-sm text-gray-600 mt-0.5 md:mt-1 line-clamp-2">
                                 {incident.description.substring(0, 80)}...
                               </p>
                             </div>
                             <StatusBadge status={incident.status} />
                           </div>
 
-                          <div className="flex items-center justify-between text-xs text-gray-500 mt-3">
-                            <span>📍 {incident.location || "Location N/A"}</span>
-                            <span>{new Date(incident.createdAt).toLocaleDateString()}</span>
+                          <div className="flex items-center justify-between text-xs text-gray-500 mt-2 md:mt-3 gap-1">
+                            <span className="truncate">📍 {incident.location || "Location N/A"}</span>
+                            <span className="flex-shrink-0">{new Date(incident.createdAt).toLocaleDateString()}</span>
                           </div>
                         </div>
                       ))}
@@ -841,16 +841,16 @@ function AdminDashboard() {
 function StatCard({ title, value, color = "text-blue-600", icon: Icon = AlertCircle }) {
   return (
     <div
-      className="p-8 rounded-3xl transition shadow-2xl bg-gradient-to-br backdrop-blur-lg border border-white/20"
+      className="p-4 md:p-8 rounded-2xl md:rounded-3xl transition shadow-2xl bg-gradient-to-br backdrop-blur-lg border border-white/20"
       style={{
         background: `linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)`
       }}
     >
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-medium text-gray-600">{title}</p>
-        <Icon className={`w-5 h-5 ${color}`} />
+      <div className="flex items-center justify-between mb-2 md:mb-3">
+        <p className="text-xs md:text-sm font-medium text-gray-600">{title}</p>
+        <Icon className={`w-4 md:w-5 h-4 md:h-5 ${color}`} />
       </div>
-      <p className={`text-5xl font-bold ${color}`}>{value}</p>
+      <p className={`text-3xl md:text-5xl font-bold ${color}`}>{value}</p>
     </div>
   );
 }
