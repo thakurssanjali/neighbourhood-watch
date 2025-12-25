@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import api from "../services/api";
 
 function ForgotPassword() {
@@ -154,6 +155,7 @@ function ForgotPassword() {
           </p>
         </div>
       </section>
+      <Footer />
     </>
   );
 }

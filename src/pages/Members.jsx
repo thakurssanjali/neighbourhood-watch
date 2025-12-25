@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { userAPI } from "../services/api";
 
 function Members() {
@@ -81,8 +82,8 @@ function Members() {
                       <h3 className="text-xl font-bold text-gray-900 mb-1">
                         {user.name}
                       </h3>
-                      <p className="text-sm text-gray-500">
-                        Community Member
+                      <p className="text-sm text-blue-600 font-semibold">
+                        📞 {user.phone}
                       </p>
                     </div>
                     <span className="text-3xl">👤</span>
@@ -93,16 +94,6 @@ function Members() {
 
                   {/* MEMBER INFO */}
                   <div className="space-y-3">
-                    <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">📞</span>
-                      <div>
-                        <p className="text-xs text-gray-500">Phone</p>
-                        <p className="text-sm font-medium text-gray-900">
-                          {user.phone}
-                        </p>
-                      </div>
-                    </div>
-
                     <div className="flex items-start gap-3">
                       <span className="text-lg mt-0.5">📍</span>
                       <div>
@@ -140,6 +131,7 @@ function Members() {
         </section>
 
       </div>
+      <Footer />
     </div>
   );
 }

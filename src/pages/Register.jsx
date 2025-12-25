@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { authAPI } from "../services/api";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { authAPI } from "../services/api";
 
 function Register() {
   const navigate = useNavigate();
@@ -193,6 +194,7 @@ function Register() {
           </p>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

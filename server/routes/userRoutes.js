@@ -7,7 +7,7 @@ const router = express.Router();
 router.get("/public", async (req, res) => {
   try {
     const users = await User.find().select(
-      "name locality society houseNumber createdAt"
+      "name phone locality society houseNumber createdAt"
     );
     res.json(users);
   } catch (error) {

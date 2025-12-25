@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
-import { userAPI, guidelineAPI, eventAPI } from "../services/api";
+import Footer from "../components/Footer";
+import { userAPI, guidelineAPI, eventAPI, incidentAPI } from "../services/api";
 
 const EVENT_GIFS = {
   Dance: "/images/event-gifs/dance.gif",
@@ -15,7 +16,7 @@ const EVENT_GIFS = {
 
 function Home() {
   // ✅ Hooks MUST be here
-  const incidents = []; // Empty incidents (not being populated from any API)
+  const [incidents, setIncidents] = useState([]);
   const [activeStatus, setActiveStatus] = useState(null);
   const token = localStorage.getItem("token");
   const isLoggedIn = !!token;
@@ -26,6 +27,13 @@ function Home() {
   const scrollRef = useRef(null);
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
+
+  // Fetch public incidents
+  useEffect(() => {
+    incidentAPI.getPublic()
+      .then((res) => setIncidents(res.data))
+      .catch(() => console.error("Failed to load incidents"));
+  }, []);
 
   useEffect(() => {
     guidelineAPI.getPublic()
@@ -453,15 +461,7 @@ function Home() {
               )}
             </div>
 
-            {/* FOOTER */}
-            <div className="flex justify-end px-6 py-4 border-t border-gray-200 bg-gray-50">
-              <button
-                onClick={() => setActiveStatus(null)}
-                className="px-6 py-2 font-semibold text-white transition-colors bg-gray-600 rounded-lg hover:bg-gray-700"
-              >
-                Close
-              </button>
-            </div>
+
           </div>
         </div>
       )}
@@ -856,231 +856,8 @@ function Home() {
           </div>
         </div>
       )}
-
-
-      {/* ================= FOOTER ================= */}
-      <footer className="relative text-gray-300">
-
-        {/* Background gradient + depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364]"></div>
-        <div className="absolute inset-0 bg-black/40"></div>
-
-        <div className="relative grid grid-cols-1 px-6 py-20 mx-auto max-w-7xl md:grid-cols-4 gap-14">
-
-          {/* ===== BRAND ===== */}
-          <div className="space-y-6">
-            <div className="flex items-center gap-3">
-              <img
-                src="/images/logo.png"
-                alt="ReportIT Logo"
-                className="w-auto h-10"
-              />
-              <span className="text-xl font-bold text-white">
-                ReportIT
-              </span>
-            </div>
-
-            <p className="max-w-sm text-sm leading-relaxed text-gray-300">
-              ReportIT empowers neighbourhoods to stay safer by enabling residents
-              and administrators to report, track, and resolve community issues
-              transparently.
-            </p>
-
-            {/* SOCIAL ICONS */}
-            {/* SOCIAL ICONS */}
-            <div className="flex gap-4 pt-2">
-              {/* Twitter / X */}
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center w-10 h-10 transition-all duration-300 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110"
-                aria-label="Twitter"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-white"
-                >
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675
-      0-.178 0-.355-.012-.53A8.348 8.348 0 0 0 22 5.92
-      a8.19 8.19 0 0 1-2.357.646
-      4.118 4.118 0 0 0 1.804-2.27
-      8.224 8.224 0 0 1-2.605.996
-      4.107 4.107 0 0 0-6.993 3.743
-      11.65 11.65 0 0 1-8.457-4.287
-      4.106 4.106 0 0 0 1.27 5.477
-      A4.073 4.073 0 0 1 2.8 9.713v.052
-      a4.105 4.105 0 0 0 3.292 4.022
-      4.095 4.095 0 0 1-1.853.07
-      4.108 4.108 0 0 0 3.834 2.85
-      A8.233 8.233 0 0 1 2 18.407
-      a11.616 11.616 0 0 0 6.29 1.84"/>
-                </svg>
-              </a>
-
-              {/* Facebook */}
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center w-10 h-10 transition-all duration-300 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110"
-                aria-label="Facebook"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-white"
-                >
-                  <path d="M22 12a10 10 0 1 0-11.5 9.95v-7.04H8.9V12h1.6
-      V9.8c0-1.58.94-2.45 2.38-2.45.69 0 1.41.12 1.41.12v1.56h-.8
-      c-.79 0-1.04.49-1.04 1v1.2h1.77l-.28 2.91h-1.49v7.04A10
-      10 0 0 0 22 12z"/>
-                </svg>
-              </a>
-
-              {/* Instagram */}
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center w-10 h-10 transition-all duration-300 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110"
-                aria-label="Instagram"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 text-white"
-                >
-                  <path d="M7 2C4.243 2 2 4.243 2 7v10c0 2.757
-      2.243 5 5 5h10c2.757 0 5-2.243
-      5-5V7c0-2.757-2.243-5-5-5H7zm10
-      2a3 3 0 0 1 3 3v10a3 3 0 0 1-3
-      3H7a3 3 0 0 1-3-3V7a3 3 0 0 1
-      3-3h10zm-5 3a5 5 0 1 0 0 10
-      5 5 0 0 0 0-10zm0 2a3 3 0 1 1
-      0 6 3 3 0 0 1 0-6zm4.5-.9a1.1
-      1.1 0 1 0 0 2.2 1.1 1.1 0 0
-      0 0-2.2z"/>
-                </svg>
-              </a>
-            </div>
-
-          </div>
-
-          {/* ===== QUICK LINKS ===== */}
-          <div>
-            <h4 className="mb-6 text-xs font-semibold tracking-widest text-gray-200 uppercase">
-              Quick Links
-            </h4>
-
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link to="/" className="transition group hover:text-white">
-                  Home <span className="opacity-60 group-hover:opacity-100">→</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/login" className="transition group hover:text-white">
-                  Report an Incident <span className="opacity-60 group-hover:opacity-100">→</span>
-                </Link>
-              </li>
-              <li>
-                <Link to="/" className="transition group hover:text-white">
-                  Community Updates <span className="opacity-60 group-hover:opacity-100">→</span>
-                </Link>
-              </li>
-              <li>
-                <span className="transition cursor-pointer group hover:text-white">
-                  Members <span className="opacity-60 group-hover:opacity-100">→</span>
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          {/* ===== SUPPORT ===== */}
-          <div>
-            <h4 className="mb-6 text-xs font-semibold tracking-widest text-gray-200 uppercase">
-              Support & Info
-            </h4>
-
-            <ul className="space-y-4 text-sm">
-              <li>
-                <span className="transition cursor-pointer group hover:text-white">
-                  Emergency Contacts <span className="opacity-60 group-hover:opacity-100">→</span>
-                </span>
-              </li>
-              <li>
-                <span className="transition cursor-pointer group hover:text-white">
-                  Privacy Policy <span className="opacity-60 group-hover:opacity-100">→</span>
-                </span>
-              </li>
-              <li>
-                <span className="transition cursor-pointer group hover:text-white">
-                  Terms & Conditions <span className="opacity-60 group-hover:opacity-100">→</span>
-                </span>
-              </li>
-              <li className="text-xs text-gray-400">
-                📍 Designed for neighbourhood communities
-              </li>
-            </ul>
-          </div>
-
-          {/* ===== NEWSLETTER ===== */}
-          <div>
-            <h4 className="mb-6 text-xs font-semibold tracking-widest text-gray-200 uppercase">
-              Stay Updated
-            </h4>
-
-            <p className="mb-4 text-sm text-gray-300">
-              Get the latest community updates and safety alerts.
-            </p>
-
-            <div className="flex flex-col gap-3">
-              <input
-                type="email"
-                placeholder="Your email address"
-                className="px-4 py-3 text-white placeholder-gray-300 rounded-full bg-white/10 focus:outline-none focus:ring-2 focus:ring-teal-400"
-              />
-
-              <button
-                className="px-5 py-3 font-medium text-white transition-all duration-300 bg-teal-500 rounded-full hover:bg-teal-400 hover:shadow-lg"
-              >
-                Subscribe
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        {/* ===== BOTTOM BAR ===== */}
-        <div className="relative border-t border-white/10">
-          <div className="flex flex-col items-center justify-between gap-3 px-6 py-6 mx-auto text-xs text-gray-400 max-w-7xl sm:flex-row">
-
-            <span>
-              © {new Date().getFullYear()} ReportIT. All rights reserved.
-            </span>
-
-            <span className="tracking-wide">
-              Built with ❤️ for safer neighbourhoods
-            </span>
-          </div>
-        </div>
-      </footer>
-
-
+      <Footer />
     </div>
-
-
   );
 }
-
 export default Home;
-
-
-
-
-

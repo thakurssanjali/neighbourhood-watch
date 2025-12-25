@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { authAPI } from "../services/api";
 
 function Login() {
@@ -64,11 +65,10 @@ function Login() {
                 key={role}
                 type="button"
                 onClick={() => setLoginRole(role)}
-                className={`px-6 py-2 rounded-full font-bold capitalize transition-all ${
-                  loginRole === role 
-                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg" 
+                className={`px-6 py-2 rounded-full font-bold capitalize transition-all ${loginRole === role
+                    ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                  }`}
               >
                 {role}
               </button>
@@ -159,6 +159,7 @@ function Login() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

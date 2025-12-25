@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import { contactAPI } from "../services/api";
 
 function Contact() {
@@ -65,8 +66,8 @@ function Contact() {
                       OFFICE ADDRESS
                     </p>
                     <p className="text-lg font-medium text-gray-900">
-                      Green Valley Society, Block A<br />
-                      Sector 22, New City
+                      LPU
+                      GT Road, Phagwara 144401<br />
                     </p>
                   </div>
                 </div>
@@ -186,6 +187,7 @@ function Contact() {
           </div>
         </div>
       )}
+      <Footer />
     </div>
   );
 }
