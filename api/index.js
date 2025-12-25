@@ -1,9 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 
-// Load environment variables
-require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
+// Load environment variables - Vercel provides them automatically
+// Only load .env.local for local development
+if (process.env.NODE_ENV !== "production") {
+  const path = require("path");
+  require("dotenv").config({ path: path.resolve(__dirname, "../.env.local") });
+}
 
 const connectDB = require("../server/config/db");
 
@@ -34,7 +37,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes Documentation
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.json({
     message: "Welcome to Neighbourhood Watch API",
     version: "1.0.0",
@@ -83,20 +86,37 @@ app.get("/api", (req, res) => {
   });
 });
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/incidents", incidentRoutes);
-app.use("/api/events", eventRoutes);
-app.use("/api/guidelines", guidelineRoutes);
-app.use("/api/contact", contactRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/password", passwordResetRoutes);
+// Routes - mounted without /api prefix since Vercel routing handles that
+app.use("/auth", authRoutes);
+app.use("/users", userRoutes);
+app.use("/incidents", incidentRoutes);
+app.use("/events", eventRoutes);
+app.use("/guidelines", guidelineRoutes);
+app.use("/contact", contactRoutes);
+app.use("/admin", adminRoutes);
+app.use("/password", passwordResetRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({ 
+    message: "Internal server error",
+    error: process.env.NODE_ENV === "production" ? "Server error" : err.message 
+  });
+});
 
 // Serverless function handler
 module.exports = async (req, res) => {
-  await ensureDbConnection();
-  return app(req, res);
+  try {
+    await ensureDbConnection();
+    return app(req, res);
+  } catch (error) {
+    console.error("Serverless function error:", error);
+    return res.status(500).json({ 
+      message: "Database connection failed",
+      error: error.message 
+    });
+  }
 };
 
 // For local development
