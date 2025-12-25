@@ -31,7 +31,7 @@ function About() {
       <section
         className="min-h-screen flex items-center justify-center px-6 pt-32
         bg-cover bg-center relative"
-        style={{ backgroundImage: "url('/images/hero.jpg')" }}
+        style={{ backgroundImage: "url('/images/hero.webp')" }}
       >
         <div className="max-w-4xl text-center bg-white/70 backdrop-blur-md
           rounded-3xl shadow-xl p-10"

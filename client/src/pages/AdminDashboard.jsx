@@ -282,23 +282,19 @@ useEffect(() => {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-fixed"
-      style={{ backgroundImage: "url('/images/hero.jpg')" }}
+      className="min-h-screen bg-fixed bg-center bg-cover"
+      style={{ backgroundImage: "url('/images/hero.webp')" }}
     >
       {/* Optional dark overlay for readability */}
       <div className="min-h-screen bg-black/20">
       {/* ================= NAVBAR ================= */}
-<nav className="absolute top-0 left-0 w-full pt-6 z-30">
+<nav className="absolute top-0 left-0 z-30 w-full pt-6">
   <div className="relative flex items-center justify-center px-6">
 
     {/* HOME BUTTON — LEFT */}
     <Link
       to="/"
-      className="absolute left-6
-      bg-white/70 backdrop-blur-md
-      px-4 py-2 rounded-full
-      text-sm font-medium shadow
-      hover:bg-white"
+      className="absolute px-4 py-2 text-sm font-medium rounded-full shadow left-6 bg-white/70 backdrop-blur-md hover:bg-white"
     >
       Home
     </Link>
@@ -308,18 +304,14 @@ useEffect(() => {
       <img
         src="/images/logo.png"
         alt="ReportIt Logo"
-        className="h-14 w-auto drop-shadow-md cursor-pointer"
+        className="w-auto cursor-pointer h-14 drop-shadow-md"
       />
     </Link>
 
     {/* LOGOUT — RIGHT */}
     <button
       onClick={handleLogout}
-      className="absolute right-6
-      bg-red-600 text-white
-      px-4 py-2 rounded-full
-      text-sm font-medium shadow
-      hover:bg-red-700"
+      className="absolute px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-full shadow right-6 hover:bg-red-700"
     >
       Logout
     </button>
@@ -328,13 +320,11 @@ useEffect(() => {
 
 
         {/* ================= HEADER ================= */}
-        <section className="pt-32 px-6 text-center">
+        <section className="px-6 pt-32 text-center">
           <div
-            className="max-w-4xl mx-auto
-            bg-white/70 backdrop-blur-md
-            rounded-3xl shadow-xl p-10"
+            className="max-w-4xl p-10 mx-auto shadow-xl bg-white/70 backdrop-blur-md rounded-3xl"
           >
-            <h1 className="text-4xl font-bold mb-3">
+            <h1 className="mb-3 text-4xl font-bold">
               Admin Dashboard
             </h1>
             <p className="text-gray-700">
@@ -344,8 +334,8 @@ useEffect(() => {
         </section>
 
         {/* ================= STATS ================= */}
-        <section className="max-w-7xl mx-auto px-6 mt-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <section className="px-6 mx-auto mt-16 max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard title="Total" value={incidents.length} />
             <StatCard title="Pending" value={pending.length} color="text-yellow-600" />
             <StatCard title="In Action" value={actioning.length} color="text-orange-600" />
@@ -354,7 +344,7 @@ useEffect(() => {
         </section>
 
         {/* ================= INCIDENT LIST ================= */}
-        <section className="max-w-7xl mx-auto px-6 py-20">
+        <section className="px-6 py-20 mx-auto max-w-7xl">
           {incidents.length === 0 ? (
             <p className="text-center text-white">
               No complaints available
@@ -370,14 +360,14 @@ useEffect(() => {
                   hover:scale-[1.02] hover:shadow-2xl"
                 >
                   {/* HEADER */}
-                  <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 gap-4">
+                  <div className="flex flex-col gap-4 mb-4 md:flex-row md:justify-between md:items-center">
                     <h3 className="text-xl font-semibold">
                       {incident.title}
                     </h3>
                     <StatusBadge status={incident.status} />
                   </div>
 
-                  <p className="text-gray-700 mb-4">
+                  <p className="mb-4 text-gray-700">
                     {incident.description}
                   </p>
                   <textarea
@@ -389,13 +379,12 @@ useEffect(() => {
       [incident._id]: e.target.value
     })
   }
-  className="w-full mt-3 p-3 rounded-xl border border-gray-300
-  focus:outline-none focus:ring-2 focus:ring-black"
+  className="w-full p-3 mt-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
 />
 
 
                   {/* REPORTER INFO */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+                  <div className="grid grid-cols-1 gap-3 text-sm text-gray-700 md:grid-cols-2">
                     <p><strong>Reporter:</strong> {incident.reportedBy?.name || "Anonymous"}</p>
                     <p><strong>Phone:</strong> {incident.reportedBy?.phone || "N/A"}</p>
                     <p><strong>Society:</strong> {incident.reportedBy?.society}</p>
@@ -403,12 +392,12 @@ useEffect(() => {
                   </div>
 
                   {/* ACTIONS */}
-                  <div className="mt-6 flex gap-3">
-                    <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="flex gap-3 mt-6">
+                    <div className="flex flex-wrap gap-3 mt-6">
   {incident.status !== "Actioning" && (
     <button
       onClick={() => updateIncident(incident._id, "Actioning")}
-      className="bg-orange-500 text-white px-5 py-2 rounded-full"
+      className="px-5 py-2 text-white bg-orange-500 rounded-full"
     >
       Mark Actioning
     </button>
@@ -417,7 +406,7 @@ useEffect(() => {
   {incident.status !== "Resolved" && (
     <button
       onClick={() => updateIncident(incident._id, "Resolved")}
-      className="bg-green-600 text-white px-5 py-2 rounded-full"
+      className="px-5 py-2 text-white bg-green-600 rounded-full"
     >
       Mark Resolved
     </button>
@@ -425,7 +414,7 @@ useEffect(() => {
 
   <button
     onClick={() => deleteIncident(incident._id)}
-    className="bg-red-600 text-white px-5 py-2 rounded-full"
+    className="px-5 py-2 text-white bg-red-600 rounded-full"
   >
     Delete
   </button>
@@ -437,9 +426,9 @@ useEffect(() => {
             </div>
           )}
         </section>
-<section className="max-w-4xl mx-auto px-6 pb-20">
-  <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-xl p-8">
-    <h2 className="text-2xl font-bold mb-4">
+<section className="max-w-4xl px-6 pb-20 mx-auto">
+  <div className="p-8 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
+    <h2 className="mb-4 text-2xl font-bold">
       Post Community Guideline
     </h2>
 
@@ -449,7 +438,7 @@ useEffect(() => {
       onChange={(e) =>
         setGuideline({ ...guideline, title: e.target.value })
       }
-      className="w-full mb-3 p-3 rounded-xl border"
+      className="w-full p-3 mb-3 border rounded-xl"
     />
 
     <textarea
@@ -458,7 +447,7 @@ useEffect(() => {
       onChange={(e) =>
         setGuideline({ ...guideline, description: e.target.value })
       }
-      className="w-full mb-3 p-3 rounded-xl border"
+      className="w-full p-3 mb-3 border rounded-xl"
     />
 
     <input
@@ -467,7 +456,7 @@ useEffect(() => {
       onChange={(e) =>
         setGuideline({ ...guideline, venue: e.target.value })
       }
-      className="w-full mb-4 p-3 rounded-xl border"
+      className="w-full p-3 mb-4 border rounded-xl"
     />
     <input
   type="date"
@@ -475,7 +464,7 @@ useEffect(() => {
   onChange={(e) =>
     setGuideline({ ...guideline, date: e.target.value })
   }
-  className="w-full mb-3 p-3 rounded-xl border"
+  className="w-full p-3 mb-3 border rounded-xl"
 />
 
 <input
@@ -484,13 +473,13 @@ useEffect(() => {
   onChange={(e) =>
     setGuideline({ ...guideline, time: e.target.value })
   }
-  className="w-full mb-3 p-3 rounded-xl border"
+  className="w-full p-3 mb-3 border rounded-xl"
 />
 
 
   <button
   onClick={postGuideline}
-  className="bg-black text-white px-6 py-2 rounded-full"
+  className="px-6 py-2 text-white bg-black rounded-full"
 >
   Post Guideline
 </button>
@@ -498,9 +487,9 @@ useEffect(() => {
   </div>
 </section>
 
-<section className="max-w-5xl mx-auto px-6 pb-32">
-  <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-xl p-10">
-    <h2 className="text-2xl font-bold mb-6">
+<section className="max-w-5xl px-6 pb-32 mx-auto">
+  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
+    <h2 className="mb-6 text-2xl font-bold">
       Manage Community Updates
     </h2>
 
@@ -511,32 +500,31 @@ useEffect(() => {
         {guidelinesList.map((item) => (
           <div
             key={item._id}
-            className="bg-white rounded-2xl p-5 shadow flex justify-between items-start gap-6"
+            className="flex items-start justify-between gap-6 p-5 bg-white shadow rounded-2xl"
           >
             <div>
-              <h3 className="font-semibold text-lg">
+              <h3 className="text-lg font-semibold">
                 {item.title}
               </h3>
 
-              <p className="text-sm text-gray-700 mt-1">
+              <p className="mt-1 text-sm text-gray-700">
                 {item.description}
               </p>
 
               {item.venue && (
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="mt-1 text-sm text-gray-600">
                   📍 {item.venue}
                 </p>
               )}
 
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="mt-2 text-xs text-gray-500">
                 📅 {new Date(item.eventDateTime).toLocaleString()}
               </p>
             </div>
 
             <button
               onClick={() => deleteGuideline(item._id)}
-              className="bg-red-600 text-white px-4 py-2 rounded-full
-              hover:bg-red-700 transition"
+              className="px-4 py-2 text-white transition bg-red-600 rounded-full hover:bg-red-700"
             >
               Delete
             </button>
@@ -548,12 +536,11 @@ useEffect(() => {
 </section>
 
 {/* ================= ADD COMMUNITY EVENT ================= */}
-<section className="max-w-4xl mx-auto px-6 pb-24">
+<section className="max-w-4xl px-6 pb-24 mx-auto">
   <div
-    className="bg-white/70 backdrop-blur-md
-    rounded-3xl shadow-xl p-10"
+    className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl"
   >
-    <h2 className="text-2xl font-bold mb-6">
+    <h2 className="mb-6 text-2xl font-bold">
       Add Community Event
     </h2>
 
@@ -562,8 +549,7 @@ useEffect(() => {
   name="category"
   value={eventData.category}
   onChange={handleEventChange}
-  className="w-full px-4 py-3 rounded-xl border
-  bg-white focus:outline-none"
+  className="w-full px-4 py-3 bg-white border rounded-xl focus:outline-none"
   required
 >
   <option value="">Select Event Category</option>
@@ -580,7 +566,7 @@ useEffect(() => {
         placeholder="Event title"
         value={eventData.title}
         onChange={handleEventChange}
-        className="w-full px-4 py-3 rounded-xl border"
+        className="w-full px-4 py-3 border rounded-xl"
       />
 
       <input
@@ -588,7 +574,7 @@ useEffect(() => {
         placeholder="Venue"
         value={eventData.venue}
         onChange={handleEventChange}
-        className="w-full px-4 py-3 rounded-xl border"
+        className="w-full px-4 py-3 border rounded-xl"
       />
 
       <textarea
@@ -596,7 +582,7 @@ useEffect(() => {
         placeholder="Event description"
         value={eventData.description}
         onChange={handleEventChange}
-        className="w-full px-4 py-3 rounded-xl border"
+        className="w-full px-4 py-3 border rounded-xl"
       />
 
      <input
@@ -604,23 +590,22 @@ useEffect(() => {
   name="eventDateTime"
   value={eventData.eventDateTime}
   onChange={handleEventChange}
-  className="w-full px-4 py-3 rounded-xl border"
+  className="w-full px-4 py-3 border rounded-xl"
 />
 
 
       <button
         onClick={createEvent}
-        className="bg-black text-white px-6 py-3 rounded-full
-        hover:bg-gray-900 transition"
+        className="px-6 py-3 text-white transition bg-black rounded-full hover:bg-gray-900"
       >
         Post Event
       </button>
     </div>
   </div>
 </section>
-<section className="max-w-5xl mx-auto px-6 pb-32">
-  <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-xl p-10">
-    <h2 className="text-2xl font-bold mb-6">
+<section className="max-w-5xl px-6 pb-32 mx-auto">
+  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
+    <h2 className="mb-6 text-2xl font-bold">
       Manage Events
     </h2>
 
@@ -631,7 +616,7 @@ useEffect(() => {
         {events.map((event) => (
           <div
             key={event._id}
-            className="bg-white rounded-2xl p-5 shadow flex justify-between items-center"
+            className="flex items-center justify-between p-5 bg-white shadow rounded-2xl"
           >
             <div>
               <p className="font-semibold">
@@ -648,7 +633,7 @@ useEffect(() => {
             <div className="flex gap-3">
               <button
                 onClick={() => deleteEvent(event._id)}
-                className="bg-red-600 text-white px-4 py-2 rounded-full"
+                className="px-4 py-2 text-white bg-red-600 rounded-full"
               >
                 Delete
               </button>
@@ -659,9 +644,9 @@ useEffect(() => {
     )}
   </div>
 </section>
-<section className="max-w-6xl mx-auto px-6 pb-32">
-  <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-xl p-10">
-    <h2 className="text-2xl font-bold mb-6">
+<section className="max-w-6xl px-6 pb-32 mx-auto">
+  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
+    <h2 className="mb-6 text-2xl font-bold">
       Messages & Queries Received
     </h2>
 
@@ -672,16 +657,15 @@ useEffect(() => {
         {messages.map((msg) => (
           <div
             key={msg._id}
-            className="bg-white rounded-2xl p-6 shadow
-            flex flex-col md:flex-row md:justify-between gap-4"
+            className="flex flex-col gap-4 p-6 bg-white shadow rounded-2xl md:flex-row md:justify-between"
           >
             {/* MESSAGE CONTENT */}
             <div>
-              <p className="font-semibold text-lg mb-1">
+              <p className="mb-1 text-lg font-semibold">
                 {msg.sentBy?.name}
               </p>
 
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="mb-2 text-sm text-gray-600">
                 📞 {msg.sentBy?.phone} • 🏠 {msg.sentBy?.society}
               </p>
 
@@ -689,7 +673,7 @@ useEffect(() => {
                 {msg.message}
               </p>
 
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="mt-2 text-xs text-gray-500">
                 {new Date(msg.createdAt).toLocaleString()}
               </p>
             </div>
@@ -698,8 +682,7 @@ useEffect(() => {
             <div className="flex items-start">
               <button
                 onClick={() => deleteMessage(msg._id)}
-                className="bg-red-600 text-white px-4 py-2 rounded-full
-                hover:bg-red-700"
+                className="px-4 py-2 text-white bg-red-600 rounded-full hover:bg-red-700"
               >
                 Delete
               </button>
@@ -713,9 +696,9 @@ useEffect(() => {
 
 
 {/* ================= PASSWORD RESET REQUESTS ================= */}
-<section className="max-w-5xl mx-auto px-6 pb-32">
-  <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-xl p-10">
-    <h2 className="text-2xl font-bold mb-6">
+<section className="max-w-5xl px-6 pb-32 mx-auto">
+  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
+    <h2 className="mb-6 text-2xl font-bold">
       Pending Password Reset Requests
     </h2>
 
@@ -728,13 +711,11 @@ useEffect(() => {
         {resetRequests.map((req) => (
           <div
             key={req._id}
-            className="bg-white rounded-2xl p-6 shadow
-            flex flex-col md:flex-row md:items-center
-            justify-between gap-4"
+            className="flex flex-col justify-between gap-4 p-6 bg-white shadow rounded-2xl md:flex-row md:items-center"
           >
             {/* USER INFO */}
             <div>
-              <p className="font-semibold text-lg">
+              <p className="text-lg font-semibold">
                 {req.user.name}
               </p>
               <p className="text-sm text-gray-600">
@@ -753,14 +734,13 @@ useEffect(() => {
     placeholder="New Password"
     value={newPassword}
     onChange={(e) => setNewPassword(e.target.value)}
-    className="w-full px-4 py-3 rounded-xl border pr-12"
+    className="w-full px-4 py-3 pr-12 border rounded-xl"
   />
 
   <button
     type="button"
     onClick={() => setShowNewPassword(!showNewPassword)}
-    className="absolute right-4 top-1/2 -translate-y-1/2
-      text-gray-600 hover:text-black text-sm"
+    className="absolute text-sm text-gray-600 -translate-y-1/2 right-4 top-1/2 hover:text-black"
   >
     {showNewPassword ? "🙈" : "👁️"}
   </button>
@@ -771,8 +751,7 @@ useEffect(() => {
               onClick={() =>
                 resetUserPassword(req._id, req.phone)
               }
-              className="bg-black text-white
-              px-6 py-3 rounded-full"
+              className="px-6 py-3 text-white bg-black rounded-full"
             >
               Reset Password
             </button>
@@ -796,11 +775,9 @@ useEffect(() => {
 function StatCard({ title, value, color = "text-blue-600" }) {
   return (
     <div
-      className="bg-white/70 backdrop-blur-md
-      rounded-3xl shadow-xl p-8 text-center
-      transition hover:scale-105"
+      className="p-8 text-center transition shadow-xl bg-white/70 backdrop-blur-md rounded-3xl hover:scale-105"
     >
-      <p className="text-sm text-gray-600 mb-1">{title}</p>
+      <p className="mb-1 text-sm text-gray-600">{title}</p>
       <p className={`text-4xl font-bold ${color}`}>{value}</p>
     </div>
   );

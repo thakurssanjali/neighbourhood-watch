@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const EVENT_GIFS = {
   Dance: "/images/event-gifs/dance.gif",
@@ -14,47 +15,17 @@ const EVENT_GIFS = {
 
 function Home() {
   // ✅ Hooks MUST be here
-  const [incidents, setIncidents] = useState([]);
+  const incidents = []; // Empty incidents (not being populated from any API)
   const [activeStatus, setActiveStatus] = useState(null);
-const token = localStorage.getItem("token");
-const userName = localStorage.getItem("name");
-const isLoggedIn = !!token;
-const [showMembers, setShowMembers] = useState(false);
-const [members, setMembers] = useState([]);
-const [guidelines, setGuidelines] = useState([]);
-const [loadingGuidelines, setLoadingGuidelines] = useState(true);
-const updatesRef = useRef(null);
-const [pauseScroll, setPauseScroll] = useState(false);
-const scrollRef = useRef(null);
-
-const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-const heroRef = useRef(null);
-const [calendarEvents, setCalendarEvents] = useState([]);
-const [selectedDate, setSelectedDate] = useState(null);
-
-
-const fetchMembers = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/users/public"
-    );
-    setMembers(res.data);
-    setShowMembers(true);
-  } catch {
-    alert("Failed to load members");
-  }
-};
-const handleMouseMove = (e) => {
-  if (heroRef.current) {
-    const rect = heroRef.current.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
-  }
-};
-
-
+  const token = localStorage.getItem("token");
+  const isLoggedIn = !!token;
+  const [showMembers, setShowMembers] = useState(false);
+  const [members, setMembers] = useState([]);
+  const [guidelines, setGuidelines] = useState([]);
+  const [loadingGuidelines, setLoadingGuidelines] = useState(true);
+  const scrollRef = useRef(null);
+  const [calendarEvents, setCalendarEvents] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   useEffect(() => {
     axios
@@ -63,6 +34,13 @@ const handleMouseMove = (e) => {
     .catch(() => console.error("Failed to load guidelines"))
     .finally(() => setLoadingGuidelines(false));
 
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/api/users/public")
+      .then((res) => setMembers(res.data))
+      .catch(() => console.error("Failed to load members"));
   }, []);
 
   useEffect(() => {
@@ -130,9 +108,7 @@ const year = today.getFullYear();
 const month = today.getMonth();
 
 const daysInMonth = new Date(year, month + 1, 0).getDate();
-let firstDay = new Date(year, month, 1).getDay();
-// Convert Sunday (0) → 6, Monday (1) → 0, etc.
-firstDay = (firstDay + 6) % 7;
+// Note: firstDay calculation was removed as it's not used in current calendar layout
 
 const monthDays = Array.from({ length: daysInMonth }, (_, i) => {
   const date = new Date(year, month, i + 1);
@@ -149,128 +125,32 @@ const monthDays = Array.from({ length: daysInMonth }, (_, i) => {
 
 
   return (
-    <div className="min-h-screen
-bg-gradient-to-br from-purple-100 via-yellow-50 to-orange-100
-dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-black
-text-black dark:text-gray-100">
+    <div className="min-h-screen text-black bg-gradient-to-br from-purple-100 via-yellow-50 to-orange-100 dark:bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-black dark:text-gray-100">
 
-{/* ================= NAVBAR ================= */}
-<nav className="absolute top-0 left-0 w-full pt-6 z-20">
-
-  {/* LOGO — LEFT */}
-  <Link to="/" className="absolute left-6 top-6 z-30 flex items-center">
-    <img
-      src="/images/logo.png"
-      alt="ReportIt Logo"
-      className="h-14 w-auto drop-shadow-md"
-    />
-  </Link>
-
-  {/* CENTER NAVIGATION PILL */}
-  <div className="flex justify-center ">
-    <div
-      className="relative flex items-center gap-8
-      px-10 py-3
-      rounded-full glass-nav"
-    >
-      {/* LIQUID INDICATOR */}
-      <span id="liquid-indicator" className="liquid-indicator" />
-
-      <NavItem to="/" label="Home" />
-      <NavItem href="#incidents" label="Incidents" />
-      <NavItem to="/members" label="Members" />
-      <NavItem to="/contact" label="Contact" />
-      <NavItem to="/about" label="About Us" />
-    </div>
-  </div>
-
-  {/* RIGHT AUTH PILL */}
-{/* RIGHT AUTH PILL */}
-<div className="absolute right-6 top-6">
-  <div
-    className="relative flex items-center gap-5
-    px-4 py-2
-    rounded-full glass-nav auth-pill"
-  >
-    {!isLoggedIn ? (
-      <>
-        <Link
-          to="/login"
-          className="auth-link relative z-10 text-white/90"
-        >
-          Log in
-        </Link>
-
-        <Link
-          to="/register"
-          className="auth-cta relative z-10 text-white/90"
-        >
-          Sign Up
-        </Link>
-
-        {/* LIQUID INDICATOR — MUST BE LAST */}
-        <span className="auth-liquid" />
-      </>
-    ) : (
-      <>
-        <span className="text-sm font-medium text-white/90">
-          Hi, {userName}
-        </span>
-
-        <button
-          onClick={() => {
-            localStorage.clear();
-            window.location.reload();
-          }}
-          className="auth-logout"
-        >
-          Logout
-        </button>
-      </>
-    )}
-  </div>
-</div>
-
-
-</nav>
+      <Navbar />
 
 
 
 {/* ================= HERO SECTION ================= */}
 {/* ================= HERO SECTION ================= */}
 <section
-  ref={heroRef}
-  onMouseMove={handleMouseMove}
-  className="min-h-screen relative flex items-center px-6 pt-32 
-  bg-cover bg-center overflow-hidden"
+  className="relative flex items-center min-h-screen px-6 pt-32 overflow-hidden bg-center bg-cover"
   style={{
-    backgroundImage: "url('/images/hero.jpg')",
+    backgroundImage: "url('/images/hero.webp')",
   }}
 >
   {/* Subtle overlay */}
   <div className="absolute inset-0 bg-black/45" />
 
-  {/* ================= THE MOVING MAN ================= */}
-  <img
-    src="/images/security-guard.png" /* Replace with your image path */
-    alt="Moving Guard"
-    className="absolute w-24 md:w-32 h-auto pointer-events-none transition-transform duration-100 ease-out z-[5] opacity-90"
-    style={{
-      left: 0, 
-      top: 0,
-      transform: `translate(${mousePos.x}px, ${mousePos.y}px) translate(-50%, -50%)`,
-    }}
-  />
-
-  <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+  <div className="relative z-10 grid items-center grid-cols-1 gap-16 mx-auto max-w-7xl md:grid-cols-2">
 
     {/* ================= LEFT CONTENT ================= */}
     <div>
-      <h1 className="text-6xl md:text-7xl font-extrabold text-white mb-8">
+      <h1 className="mb-8 text-6xl font-extrabold text-white md:text-7xl">
         ReportIT
       </h1>
 
-      <p className="text-xl md:text-2xl text-white/90 max-w-xl mb-10 leading-relaxed">
+      <p className="max-w-xl mb-10 text-xl leading-relaxed md:text-2xl text-white/90">
         ReportIT is a community-driven platform that ensures local issues are
         reported, tracked, and resolved transparently. It empowers residents
         to raise concerns, follow real-time progress, and actively contribute
@@ -279,14 +159,7 @@ text-black dark:text-gray-100">
 
       <Link
         to={isLoggedIn ? "/user/dashboard" : "/login"}
-        className="
-          inline-block
-          bg-white text-black
-          px-8 py-4
-          rounded-lg text-lg font-semibold
-          transition-all duration-300
-          hover:bg-gray-100 hover:shadow-md
-        "
+        className="inline-block px-8 py-4 text-lg font-semibold text-black transition-all duration-300 bg-white rounded-lg hover:bg-gray-100 hover:shadow-md"
       >
         {isLoggedIn ? "My Dashboard" : "Report an Incident"}
       </Link>
@@ -298,16 +171,16 @@ text-black dark:text-gray-100">
 
       <div className="absolute inset-0 flex animate-scrollX">
         {[
-          "/images/awareness1.jpg",
-          "/images/awareness2.jpg",
-          "/images/awareness3.jpg",
-          "/images/awareness4.jpg",
+          "/images/awareness1.webp",
+          "/images/awareness2.webp",
+          "/images/awareness3.webp",
+          "/images/awareness4.webp",
         ].map((img, index) => (
-          <div key={index} className="min-w-full h-full p-4">
+          <div key={index} className="h-full min-w-full p-4">
             <img
               src={img}
               alt="Community awareness"
-              className="w-full h-full object-cover rounded-xl"
+              className="object-cover w-full h-full rounded-xl"
             />
           </div>
         ))}
@@ -320,28 +193,27 @@ text-black dark:text-gray-100">
      {/* ================= INCIDENT OVERVIEW SECTION ================= */}
 <section
   id="incidents"
-  className="min-h-screen flex items-center justify-center px-6
-  bg-cover bg-center relative fade-in-section"
-  style={{ backgroundImage: "url('/images/totalcards.jpg')" }}
+  className="relative flex items-center justify-center min-h-screen px-6 bg-center bg-cover fade-in-section"
+  style={{ backgroundImage: "url('/images/totalcards.webp')" }}
 >
 
 <div className="absolute inset-0 bg-black/50"></div>
 
 
-  <div className="max-w-7xl w-full">
-    <div className="text-center mb-12">
-  <h2 className="text-7xl font-extrabold text-white drop-shadow-lg mb-3">
+  <div className="w-full max-w-7xl">
+    <div className="mb-12 text-center">
+  <h2 className="mb-3 font-extrabold text-white text-7xl drop-shadow-lg">
     Incident Overview
   </h2>
 
-  <p className="text-lg text-gray-200 max-w-2xl mx-auto drop-shadow">
+  <p className="max-w-2xl mx-auto text-lg text-gray-200 drop-shadow">
     A real-time snapshot of all reported issues in your neighbourhood,
     including their current status and progress.
   </p>
 </div>
 
 
-    <div className="max-w-7xl w-full mx-auto space-y-10">
+    <div className="w-full mx-auto space-y-10 max-w-7xl">
 
   {/* ===== TOTAL INCIDENTS (TOP) ===== */}
   <div className="flex justify-center">
@@ -354,10 +226,10 @@ text-black dark:text-gray-100">
         transition-all duration-300
         hover:scale-[1.03] hover:shadow-2xl"
       >
-        <h3 className="text-5xl font-bold text-blue-600 mb-3">
+        <h3 className="mb-3 text-5xl font-bold text-blue-600">
           {totalCount}
         </h3>
-        <p className="text-xl font-semibold mb-2">
+        <p className="mb-2 text-xl font-semibold">
           Total Incidents Reported
         </p>
         <p className="text-sm text-gray-600">
@@ -368,7 +240,7 @@ text-black dark:text-gray-100">
   </div>
 
   {/* ===== OTHER 3 CARDS ===== */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+  <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
 
     {/* PENDING */}
     <div
@@ -378,10 +250,10 @@ text-black dark:text-gray-100">
       transition-all duration-300
       hover:scale-[1.03] hover:shadow-2xl"
     >
-      <h3 className="text-4xl font-bold text-yellow-500 mb-2">
+      <h3 className="mb-2 text-4xl font-bold text-yellow-500">
         {pending.length}
       </h3>
-      <p className="text-lg font-semibold mb-2">Pending</p>
+      <p className="mb-2 text-lg font-semibold">Pending</p>
       <p className="text-sm text-gray-600">
         Awaiting verification or admin input
       </p>
@@ -395,10 +267,10 @@ text-black dark:text-gray-100">
       transition-all duration-300
       hover:scale-[1.03] hover:shadow-2xl"
     >
-      <h3 className="text-4xl font-bold text-orange-500 mb-2">
+      <h3 className="mb-2 text-4xl font-bold text-orange-500">
         {actioning.length}
       </h3>
-      <p className="text-lg font-semibold mb-2">In Action</p>
+      <p className="mb-2 text-lg font-semibold">In Action</p>
       <p className="text-sm text-gray-600">
         Complaints currently being handled
       </p>
@@ -412,10 +284,10 @@ text-black dark:text-gray-100">
       transition-all duration-300
       hover:scale-[1.03] hover:shadow-2xl"
     >
-      <h3 className="text-4xl font-bold text-green-600 mb-2">
+      <h3 className="mb-2 text-4xl font-bold text-green-600">
         {resolved.length}
       </h3>
-      <p className="text-lg font-semibold mb-2">Resolved</p>
+      <p className="mb-2 text-lg font-semibold">Resolved</p>
       <p className="text-sm text-gray-600">
         Successfully closed by admin
       </p>
@@ -428,22 +300,19 @@ text-black dark:text-gray-100">
   </div>
 </section>
 {activeStatus && (
- <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+ <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
   <div
-    className="relative max-w-4xl w-full mx-4
-    bg-white/70 backdrop-blur-xl
-    rounded-3xl shadow-2xl p-8
-    animate-fadeInUp"
+    className="relative w-full max-w-4xl p-8 mx-4 shadow-2xl bg-white/70 backdrop-blur-xl rounded-3xl animate-fadeInUp"
   >
 
       <button
         onClick={() => setActiveStatus(null)}
-        className="absolute top-3 right-4 text-xl"
+        className="absolute text-xl top-3 right-4"
       >
         ✕
       </button>
 
-      <h2 className="text-2xl font-bold mb-4">
+      <h2 className="mb-4 text-2xl font-bold">
         {activeStatus} Incidents
       </h2>
 
@@ -453,36 +322,34 @@ text-black dark:text-gray-100">
         ).map(incident => (
           <div
   key={incident._id}
-  className="bg-white/80 backdrop-blur-md
-  rounded-2xl p-5 shadow
-  transition hover:shadow-lg"
+  className="p-5 transition shadow bg-white/80 backdrop-blur-md rounded-2xl hover:shadow-lg"
 >
   {/* Title */}
-  <h3 className="font-semibold text-lg mb-1">
+  <h3 className="mb-1 text-lg font-semibold">
     {incident.title}
   </h3>
 
   {/* Reporter */}
-  <p className="text-sm text-gray-500 mb-2">
+  <p className="mb-2 text-sm text-gray-500">
     Reported by <span className="font-medium">
       {incident.reportedBy?.name || "Anonymous"}
     </span>
   </p>
 
   {/* Description */}
-  <p className="text-sm text-gray-700 mb-2">
+  <p className="mb-2 text-sm text-gray-700">
     {incident.description}
   </p>
 
   {/* Admin Reason (only if pending) */}
   {incident.adminReason && (
-    <div className="mt-2 bg-yellow-50 text-yellow-700 text-sm p-2 rounded-lg">
+    <div className="p-2 mt-2 text-sm text-yellow-700 rounded-lg bg-yellow-50">
       <strong>Admin note:</strong> {incident.adminReason}
     </div>
   )}
 
   {/* Timestamp */}
-  <p className="text-xs text-gray-400 mt-2">
+  <p className="mt-2 text-xs text-gray-400">
     {new Date(incident.createdAt).toLocaleString()}
   </p>
 </div>
@@ -496,10 +363,9 @@ text-black dark:text-gray-100">
 
 {/* ================= COMMUNITY UPDATES SECTION ================= */}
 <section
-  className="min-h-screen flex items-center justify-center px-6
-  bg-cover bg-center relative"
+  className="relative flex items-center justify-center min-h-screen px-6 bg-center bg-cover"
   style={{
-    backgroundImage: "url('/images/community-bg.jpg')"
+    backgroundImage: "url('/images/community-bg.webp')"
   }}
 >
 <div className="absolute inset-0 bg-black/60"></div>
@@ -508,20 +374,17 @@ text-black dark:text-gray-100">
 
 
 
-  <div className="max-w-7xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10
-">
+  <div className="relative z-10 grid w-full grid-cols-1 gap-12 max-w-7xl lg:grid-cols-2 ">
 
     {/* LEFT CONTENT */}
     <div
-  className="bg-white/10 backdrop-blur-xl
-  rounded-3xl p-10 max-w-lg
-  text-white shadow-2xl"
+  className="max-w-lg p-10 text-white shadow-2xl bg-white/10 backdrop-blur-xl rounded-3xl"
 >
-  <h2 className="text-5xl font-extrabold leading-tight mb-6 drop-shadow-lg">
+  <h2 className="mb-6 text-5xl font-extrabold leading-tight drop-shadow-lg">
     COMMUNITY<br />UPDATES &<br />Guidelines
   </h2>
 
-  <p className="text-xl text-gray-200 leading-relaxed drop-shadow">
+  <p className="text-xl leading-relaxed text-gray-200 drop-shadow">
     Stay informed about electricity and water updates, upcoming events,
     lost & found notices, help requests, and important community messages
     shared by society administrators.
@@ -539,44 +402,43 @@ text-black dark:text-gray-100">
 
 
 {loadingGuidelines ? (
-  <p className="text-white text-center mt-24">
+  <p className="mt-24 text-center text-white">
     Loading community updates...
   </p>
 ) : guidelines.length === 0 ? (
-  <p className="text-white text-center mt-24">
+  <p className="mt-24 text-center text-white">
     No community updates yet
   </p>
 ) : (
   guidelines.map((item) => (
     <div
       key={item._id}
-      className="bg-white/80 backdrop-blur-md
-      rounded-2xl p-5 shadow"
+      className="p-5 shadow bg-white/80 backdrop-blur-md rounded-2xl"
     >
-      <span className="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">
+      <span className="px-3 py-1 text-xs text-indigo-700 bg-indigo-100 rounded-full">
         Community Update
       </span>
 
-      <h3 className="font-semibold text-lg mt-3">
+      <h3 className="mt-3 text-lg font-semibold">
         {item.title}
       </h3>
 
-      <p className="text-sm text-gray-700 mt-2">
+      <p className="mt-2 text-sm text-gray-700">
         {item.description}
       </p>
 
       {item.venue && (
-        <p className="text-xs text-gray-600 mt-2">
+        <p className="mt-2 text-xs text-gray-600">
           📍 {item.venue}
         </p>
       )}
 
-      <p className="text-xs text-gray-500 mt-3">
+      <p className="mt-3 text-xs text-gray-500">
         📅 {new Date(item.createdAt).toLocaleDateString()} •{" "}
         ⏰ {new Date(item.createdAt).toLocaleTimeString()}
       </p>
 
-      <p className="text-xs text-gray-400 mt-1">
+      <p className="mt-1 text-xs text-gray-400">
         Posted by {item.postedBy?.name || "Admin"}
       </p>
     </div>
@@ -590,26 +452,26 @@ text-black dark:text-gray-100">
 {/* ================= EVENT CALENDAR ================= */}
 {/* ================= EVENT CALENDAR SECTION ================= */}
 <section
-  className="min-h-screen px-6 py-24 bg-cover bg-center relative"
-  style={{ backgroundImage: "url('/images/calendar-bg.jpg')" }}
+  className="relative min-h-screen px-6 py-24 bg-center bg-cover"
+  style={{ backgroundImage: "url('/images/calendar-bg.webp')" }}
 >
   <div className="absolute inset-0 bg-black/30"></div>
 
-  <div className="relative z-10 max-w-7xl mx-auto">
+  <div className="relative z-10 mx-auto max-w-7xl">
 
     {/* HEADING */}
     <div className="text-center mb-14">
-      <h2 className="text-6xl font-extrabold text-white drop-shadow mb-4">
+      <h2 className="mb-4 text-6xl font-extrabold text-white drop-shadow">
         Community Event Calendar
       </h2>
-      <p className="text-lg text-gray-200 max-w-3xl mx-auto">
+      <p className="max-w-3xl mx-auto text-lg text-gray-200">
         All neighbourhood events, meetings, celebrations and important
         activities happening this month.
       </p>
     </div>
 
     {/* WEEKDAYS */}
-    <div className="grid grid-cols-7 text-center text-gray-300 mb-4 font-semibold">
+    <div className="grid grid-cols-7 mb-4 font-semibold text-center text-gray-300">
 {["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(d => (
         <div key={d}>{d}</div>
       ))}
@@ -623,13 +485,13 @@ text-black dark:text-gray-100">
           <div
             key={idx}
             onClick={() => day.events.length && setSelectedDate(day)}
-            className="perspective cursor-pointer"
+            className="cursor-pointer perspective"
           >
             <div className="flip-card relative min-h-[140px] rounded-3xl">
 
               {/* FRONT */}
-              <div className="flip-face absolute inset-0 bg-white/80 backdrop-blur-md rounded-3xl p-4 shadow-xl">
-                <p className="font-bold text-lg mb-2">
+              <div className="absolute inset-0 p-4 shadow-xl flip-face bg-white/80 backdrop-blur-md rounded-3xl">
+                <p className="mb-2 text-lg font-bold">
                   {day.date.getDate()}
                 </p>
 {day.events.slice(0, 1).map((ev, i) => (
@@ -640,12 +502,12 @@ text-black dark:text-gray-100">
       <img
         src={EVENT_GIFS[ev.category]}
         alt={ev.category}
-        className="w-full h-16 object-cover rounded-xl mb-2"
+        className="object-cover w-full h-16 mb-2 rounded-xl"
       />
     )}
 
     {/* CATEGORY + TITLE */}
-    <div className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 truncate">
+    <div className="px-2 py-1 text-xs text-blue-700 truncate bg-blue-100 rounded-full">
       {ev.category} • {ev.title}
     </div>
   </div>
@@ -663,13 +525,13 @@ text-black dark:text-gray-100">
               <div className="flip-face flip-back absolute inset-0 bg-[#1e3d4b] text-white rounded-3xl p-4 flex flex-col justify-center">
                 {day.events.length ? (
                   <>
-                    <p className="font-semibold text-sm truncate mb-1">
+                    <p className="mb-1 text-sm font-semibold truncate">
                       {day.events[0].title}
                     </p>
                     <p className="text-xs text-gray-300">
                       📍 {day.events[0].venue}
                     </p>
-                    <p className="text-xs text-gray-300 mb-2">
+                    <p className="mb-2 text-xs text-gray-300">
                       🕒{" "}
                       {new Date(
                         day.events[0].eventDateTime
@@ -678,7 +540,7 @@ text-black dark:text-gray-100">
                         minute: "2-digit"
                       })}
                     </p>
-                    <p className="text-xs text-gray-400 italic">
+                    <p className="text-xs italic text-gray-400">
                       Click for details →
                     </p>
                   </>
@@ -704,12 +566,10 @@ text-black dark:text-gray-100">
 {showMembers && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
     <div
-      className="w-full max-w-2xl
-      bg-white/80 backdrop-blur-xl
-      rounded-3xl shadow-2xl p-8"
+      className="w-full max-w-2xl p-8 shadow-2xl bg-white/80 backdrop-blur-xl rounded-3xl"
     >
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
           Active Community Members
         </h2>
@@ -731,10 +591,9 @@ text-black dark:text-gray-100">
           {members.map((user) => (
             <div
               key={user._id}
-              className="bg-white/70 backdrop-blur-md
-              rounded-2xl p-4 shadow"
+              className="p-4 shadow bg-white/70 backdrop-blur-md rounded-2xl"
             >
-              <p className="font-semibold text-lg">
+              <p className="text-lg font-semibold">
                 {user.name}
               </p>
               <p className="text-sm text-gray-600">
@@ -749,16 +608,16 @@ text-black dark:text-gray-100">
 )}
 
 {selectedDate && (
-  <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-    <div className="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl">
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div className="w-full max-w-lg p-8 bg-white shadow-2xl rounded-3xl">
       <button
         onClick={() => setSelectedDate(null)}
-        className="absolute top-4 right-6 text-xl"
+        className="absolute text-xl top-4 right-6"
       >
         ✕
       </button>
 
-      <h3 className="text-2xl font-bold mb-4">
+      <h3 className="mb-4 text-2xl font-bold">
         Events on {selectedDate.date.toDateString()}
       </h3>
 
@@ -766,11 +625,11 @@ text-black dark:text-gray-100">
         {selectedDate.events.map((event) => (
           <div
             key={event._id}
-            className="bg-gray-100 rounded-xl p-4"
+            className="p-4 bg-gray-100 rounded-xl"
           >
             <h4 className="font-semibold">{event.title}</h4>
             <p className="text-sm text-gray-600">{event.description}</p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="mt-2 text-xs text-gray-500">
               📍 {event.venue}
             </p>
           </div>
@@ -788,8 +647,7 @@ text-black dark:text-gray-100">
   <div className="absolute inset-0 bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364]"></div>
   <div className="absolute inset-0 bg-black/40"></div>
 
-  <div className="relative max-w-7xl mx-auto px-6 py-20
-    grid grid-cols-1 md:grid-cols-4 gap-14">
+  <div className="relative grid grid-cols-1 px-6 py-20 mx-auto max-w-7xl md:grid-cols-4 gap-14">
 
     {/* ===== BRAND ===== */}
     <div className="space-y-6">
@@ -797,14 +655,14 @@ text-black dark:text-gray-100">
         <img
           src="/images/logo.png"
           alt="ReportIT Logo"
-          className="h-10 w-auto"
+          className="w-auto h-10"
         />
         <span className="text-xl font-bold text-white">
           ReportIT
         </span>
       </div>
 
-      <p className="text-sm text-gray-300 leading-relaxed max-w-sm">
+      <p className="max-w-sm text-sm leading-relaxed text-gray-300">
         ReportIT empowers neighbourhoods to stay safer by enabling residents
         and administrators to report, track, and resolve community issues
         transparently.
@@ -818,10 +676,7 @@ text-black dark:text-gray-100">
     href="https://twitter.com"
     target="_blank"
     rel="noreferrer"
-    className="w-10 h-10 rounded-full bg-white/10
-    flex items-center justify-center
-    transition-all duration-300
-    hover:bg-white/20 hover:scale-110"
+    className="flex items-center justify-center w-10 h-10 transition-all duration-300 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110"
     aria-label="Twitter"
   >
     <svg
@@ -852,10 +707,7 @@ text-black dark:text-gray-100">
     href="https://facebook.com"
     target="_blank"
     rel="noreferrer"
-    className="w-10 h-10 rounded-full bg-white/10
-    flex items-center justify-center
-    transition-all duration-300
-    hover:bg-white/20 hover:scale-110"
+    className="flex items-center justify-center w-10 h-10 transition-all duration-300 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110"
     aria-label="Facebook"
   >
     <svg
@@ -876,10 +728,7 @@ text-black dark:text-gray-100">
     href="https://instagram.com"
     target="_blank"
     rel="noreferrer"
-    className="w-10 h-10 rounded-full bg-white/10
-    flex items-center justify-center
-    transition-all duration-300
-    hover:bg-white/20 hover:scale-110"
+    className="flex items-center justify-center w-10 h-10 transition-all duration-300 rounded-full bg-white/10 hover:bg-white/20 hover:scale-110"
     aria-label="Instagram"
   >
     <svg
@@ -906,28 +755,28 @@ text-black dark:text-gray-100">
 
     {/* ===== QUICK LINKS ===== */}
     <div>
-      <h4 className="text-xs font-semibold tracking-widest text-gray-200 uppercase mb-6">
+      <h4 className="mb-6 text-xs font-semibold tracking-widest text-gray-200 uppercase">
         Quick Links
       </h4>
 
       <ul className="space-y-4 text-sm">
         <li>
-          <Link to="/" className="group hover:text-white transition">
+          <Link to="/" className="transition group hover:text-white">
             Home <span className="opacity-60 group-hover:opacity-100">→</span>
           </Link>
         </li>
         <li>
-          <Link to="/login" className="group hover:text-white transition">
+          <Link to="/login" className="transition group hover:text-white">
             Report an Incident <span className="opacity-60 group-hover:opacity-100">→</span>
           </Link>
         </li>
         <li>
-          <Link to="/" className="group hover:text-white transition">
+          <Link to="/" className="transition group hover:text-white">
             Community Updates <span className="opacity-60 group-hover:opacity-100">→</span>
           </Link>
         </li>
         <li>
-          <span className="group cursor-pointer hover:text-white transition">
+          <span className="transition cursor-pointer group hover:text-white">
             Members <span className="opacity-60 group-hover:opacity-100">→</span>
           </span>
         </li>
@@ -936,27 +785,27 @@ text-black dark:text-gray-100">
 
     {/* ===== SUPPORT ===== */}
     <div>
-      <h4 className="text-xs font-semibold tracking-widest text-gray-200 uppercase mb-6">
+      <h4 className="mb-6 text-xs font-semibold tracking-widest text-gray-200 uppercase">
         Support & Info
       </h4>
 
       <ul className="space-y-4 text-sm">
         <li>
-          <span className="group cursor-pointer hover:text-white transition">
+          <span className="transition cursor-pointer group hover:text-white">
             Emergency Contacts <span className="opacity-60 group-hover:opacity-100">→</span>
           </span>
         </li>
         <li>
-          <span className="group cursor-pointer hover:text-white transition">
+          <span className="transition cursor-pointer group hover:text-white">
             Privacy Policy <span className="opacity-60 group-hover:opacity-100">→</span>
           </span>
         </li>
         <li>
-          <span className="group cursor-pointer hover:text-white transition">
+          <span className="transition cursor-pointer group hover:text-white">
             Terms & Conditions <span className="opacity-60 group-hover:opacity-100">→</span>
           </span>
         </li>
-        <li className="text-gray-400 text-xs">
+        <li className="text-xs text-gray-400">
           📍 Designed for neighbourhood communities
         </li>
       </ul>
@@ -964,11 +813,11 @@ text-black dark:text-gray-100">
 
     {/* ===== NEWSLETTER ===== */}
     <div>
-      <h4 className="text-xs font-semibold tracking-widest text-gray-200 uppercase mb-6">
+      <h4 className="mb-6 text-xs font-semibold tracking-widest text-gray-200 uppercase">
         Stay Updated
       </h4>
 
-      <p className="text-sm text-gray-300 mb-4">
+      <p className="mb-4 text-sm text-gray-300">
         Get the latest community updates and safety alerts.
       </p>
 
@@ -976,16 +825,11 @@ text-black dark:text-gray-100">
         <input
           type="email"
           placeholder="Your email address"
-          className="px-4 py-3 rounded-full
-          bg-white/10 text-white placeholder-gray-300
-          focus:outline-none focus:ring-2 focus:ring-teal-400"
+          className="px-4 py-3 text-white placeholder-gray-300 rounded-full bg-white/10 focus:outline-none focus:ring-2 focus:ring-teal-400"
         />
 
         <button
-          className="bg-teal-500 text-white
-          px-5 py-3 rounded-full font-medium
-          transition-all duration-300
-          hover:bg-teal-400 hover:shadow-lg"
+          className="px-5 py-3 font-medium text-white transition-all duration-300 bg-teal-500 rounded-full hover:bg-teal-400 hover:shadow-lg"
         >
           Subscribe
         </button>
@@ -996,10 +840,7 @@ text-black dark:text-gray-100">
 
   {/* ===== BOTTOM BAR ===== */}
   <div className="relative border-t border-white/10">
-    <div className="max-w-7xl mx-auto px-6 py-6
-      flex flex-col sm:flex-row
-      items-center justify-between gap-3
-      text-xs text-gray-400">
+    <div className="flex flex-col items-center justify-between gap-3 px-6 py-6 mx-auto text-xs text-gray-400 max-w-7xl sm:flex-row">
 
       <span>
         © {new Date().getFullYear()} ReportIT. All rights reserved.
@@ -1016,39 +857,6 @@ text-black dark:text-gray-100">
     </div>
 
     
-  );
-}
-
-
-function NavItem({ to, href, label }) {
-  const Component = to ? Link : "a";
-
-const handleHover = (e) => {
-  const indicator = document.getElementById("liquid-indicator");
-  const rect = e.currentTarget.getBoundingClientRect();
-  const parentRect = e.currentTarget.parentElement.getBoundingClientRect();
-
-  indicator.style.width = `${rect.width}px`;
-  indicator.style.transform =
-    `translate3d(${rect.left - parentRect.left}px, 0, 0)`;
-};
-
-  return (
-    <Component
-      to={to}
-      href={href}
-      onMouseEnter={handleHover}
-      className="
-  nav-item relative z-10
-  px-4 py-2
-  text-white/90
-  transition-all duration-300
-  hover:scale-110 hover:text-white
-"
-
-    >
-      {label}
-    </Component>
   );
 }
 

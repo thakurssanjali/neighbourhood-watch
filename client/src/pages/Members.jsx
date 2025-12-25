@@ -17,7 +17,7 @@ function Members() {
   return (
     <div
       className="min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: "url('/images/community-bg.jpg')" }}
+      style={{ backgroundImage: "url('/images/community-bg.webp')" }}
     >
       <div className="min-h-screen bg-black/60">
 

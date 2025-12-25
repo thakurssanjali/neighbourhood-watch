@@ -10,6 +10,12 @@ router.post("/register", async (req, res) => {
   try {
     const { name, phone, locality, society, houseNumber, password } = req.body;
 
+    // Check if user already exists
+    const existingUser = await User.findOne({ phone });
+    if (existingUser) {
+      return res.status(400).json({ message: "Phone number already registered" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       name,
@@ -21,9 +27,11 @@ router.post("/register", async (req, res) => {
       role: "user"
     });
 
+    console.log("✅ User registered successfully:", user._id);
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Registration failed" });
+    console.error("❌ Registration error:", error.message);
+    res.status(500).json({ message: error.message || "Registration failed" });
   }
 });
 

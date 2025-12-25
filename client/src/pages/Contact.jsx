@@ -39,7 +39,7 @@ function Contact() {
   return (
     <div
       className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-6"
-      style={{ backgroundImage: "url('/images/hero.jpg')" }}
+      style={{ backgroundImage: "url('/images/hero.webp')" }}
     >
       <div className="absolute inset-0 bg-black/60"></div>
 
