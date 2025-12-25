@@ -1,0 +1,7 @@
+server/
+api/
+.git
+.env
+*.md
+README.md
+DEPLOYMENT.md
