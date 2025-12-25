@@ -1,6 +1,7 @@
 ﻿import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { Target, Zap, Heart, Rocket, FileText, Settings, Check } from "lucide-react";
 
 function About() {
   return (
@@ -39,7 +40,7 @@ function About() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {/* OUR MISSION */}
             <div className="p-10 transition-all border shadow-sm bg-white/10 backdrop-blur-md rounded-3xl border-white/20 hover:shadow-md">
-              <div className="mb-4 text-4xl">🎯</div>
+              <Target className="w-10 h-10 mb-4 text-yellow-400" />
               <h2 className="mb-4 text-3xl font-bold text-white">
                 Our Mission
               </h2>
@@ -50,7 +51,7 @@ function About() {
 
             {/* WHY REPORTIT */}
             <div className="p-10 transition-all border shadow-sm bg-white/10 backdrop-blur-md rounded-3xl border-white/20 hover:shadow-md">
-              <div className="mb-4 text-4xl">✨</div>
+              <Zap className="w-10 h-10 mb-4 text-orange-400" />
               <h2 className="mb-4 text-3xl font-bold text-white">
                 Why ReportIT?
               </h2>
@@ -100,47 +101,50 @@ function About() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {[
               {
-                icon: "📝",
+                icon: FileText,
                 title: "Report",
                 desc: "Residents report incidents with full details from their dashboard.",
                 step: "1"
               },
               {
-                icon: "⚙️",
+                icon: Settings,
                 title: "Action",
                 desc: "Admins review, take action, and add official remarks.",
                 step: "2"
               },
               {
-                icon: "✅",
+                icon: Check,
                 title: "Resolve",
                 desc: "Resolved issues are published transparently for everyone.",
                 step: "3"
               }
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="p-12 pt-20 transition-all border shadow-sm bg-white/10 backdrop-blur-md rounded-3xl border-white/20 hover:shadow-md group"
-              >
-                {/* STEP NUMBER - POSITIONED IN HEADER */}
-                <div className="absolute flex items-center justify-center w-10 h-10 text-sm font-bold text-white rounded-full shadow-md top-6 right-6 bg-gradient-to-r from-blue-500 to-blue-600">
-                  {item.step}
-                </div>
+            ].map((item, i) => {
+              const IconComponent = item.icon;
+              return (
+                <div
+                  key={i}
+                  className="p-12 pt-20 transition-all border shadow-sm bg-white/10 backdrop-blur-md rounded-3xl border-white/20 hover:shadow-md group"
+                >
+                  {/* STEP NUMBER - POSITIONED IN HEADER */}
+                  <div className="absolute flex items-center justify-center w-10 h-10 text-sm font-bold text-white rounded-full shadow-md top-6 right-6 bg-gradient-to-r from-blue-500 to-blue-600">
+                    {item.step}
+                  </div>
 
-                {/* ICON */}
-                <div className="mb-6 text-6xl transition-transform group-hover:scale-110">
-                  {item.icon}
-                </div>
+                  {/* ICON */}
+                  <div className="mb-6 transition-transform group-hover:scale-110">
+                    <IconComponent className="w-16 h-16 text-blue-400" />
+                  </div>
 
-                {/* CONTENT */}
-                <h3 className="mb-4 text-2xl font-bold text-white">
-                  {item.title}
-                </h3>
-                <p className="text-base leading-relaxed text-gray-300">
-                  {item.desc}
-                </p>
-              </div>
-            ))}
+                  {/* CONTENT */}
+                  <h3 className="mb-4 text-2xl font-bold text-white">
+                    {item.title}
+                  </h3>
+                  <p className="text-base leading-relaxed text-gray-300">
+                    {item.desc}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -156,7 +160,7 @@ function About() {
             {/* GRADIENT ACCENT */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500"></div>
 
-            <div className="mb-6 text-5xl">❤️</div>
+            <Heart className="w-12 h-12 mx-auto mb-6 text-red-400" />
             <h2 className="mb-6 text-4xl font-black text-white md:text-5xl">
               Community Comes First
             </h2>
@@ -174,7 +178,7 @@ function About() {
         <div className="absolute inset-0 bg-black/40"></div>
 
         <div className="relative max-w-5xl mx-auto text-center">
-          <div className="mb-6 text-5xl">🚀</div>
+          <Rocket className="w-12 h-12 mx-auto mb-6 text-green-400" />
           <h2 className="mb-6 text-4xl font-black text-white md:text-5xl">
             Join Your Neighbourhood Today
           </h2>

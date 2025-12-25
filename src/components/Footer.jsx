@@ -20,8 +20,8 @@ export default function Footer() {
             <p className="text-slate-400 text-sm leading-relaxed">
               Making neighborhoods safer through community collaboration and real-time incident reporting.
             </p>
-            
-            
+
+
           </div>
 
           {/* LINKS */}
@@ -43,7 +43,7 @@ export default function Footer() {
                   Contact
                 </Link>
               </li>
-              
+
             </ul>
           </div>
 
@@ -76,6 +76,7 @@ export default function Footer() {
           <div className="flex items-center gap-1">
             <span>Built with</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />
+            <span>by Ukie</span>
           </div>
         </div>
       </div>

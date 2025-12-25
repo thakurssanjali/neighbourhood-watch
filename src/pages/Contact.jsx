@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { contactAPI } from "../services/api";
+import { Phone, Mail, MapPin, Lock } from "lucide-react";
 
 function Contact() {
   const [message, setMessage] = useState("");
@@ -60,7 +61,7 @@ function Contact() {
               {/* ADDRESS CARD */}
               <div className="p-6 transition-all shadow-lg bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-xl">
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl">📍</span>
+                  <MapPin className="w-8 h-8 text-blue-600 flex-shrink-0" />
                   <div>
                     <p className="mb-1 text-sm font-semibold text-blue-600">
                       OFFICE ADDRESS
@@ -76,7 +77,7 @@ function Contact() {
               {/* PHONE CARD */}
               <div className="p-6 transition-all shadow-lg bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-xl">
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl">📞</span>
+                  <Phone className="w-8 h-8 text-blue-600 flex-shrink-0" />
                   <div>
                     <p className="mb-1 text-sm font-semibold text-blue-600">
                       PHONE
@@ -91,13 +92,13 @@ function Contact() {
               {/* EMAIL CARD */}
               <div className="p-6 transition-all shadow-lg bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-xl">
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl">✉️</span>
+                  <Mail className="w-8 h-8 text-blue-600 flex-shrink-0" />
                   <div>
                     <p className="mb-1 text-sm font-semibold text-blue-600">
                       EMAIL
                     </p>
                     <p className="text-lg font-medium text-gray-900">
-                      admin@reportit.community
+                      admin@neighbour-watch.vercel.app
                     </p>
                   </div>
                 </div>
@@ -153,7 +154,7 @@ function Contact() {
           <div className="w-full max-w-sm p-8 text-center bg-white shadow-2xl rounded-2xl animate-fadeInUp">
             {popup === "login" ? (
               <>
-                <div className="mb-4 text-5xl">🔐</div>
+                <Lock className="w-12 h-12 mx-auto mb-4 text-gray-600" />
                 <h3 className="mb-2 text-2xl font-bold text-gray-900">
                   Login Required
                 </h3>

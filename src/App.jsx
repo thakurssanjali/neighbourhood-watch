@@ -2,10 +2,13 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate,
+  useLocation
 } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 import Navbar from "./components/Navbar";
+import PageLoader from "./components/PageLoader";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -27,8 +30,18 @@ const ProtectedRoute = ({ children, role }) => {
 };
 
 function AppContent() {
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => setLoading(false), 700);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
+
   return (
     <>
+      {loading && <PageLoader />}
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />

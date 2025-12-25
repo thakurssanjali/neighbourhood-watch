@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import api, { incidentAPI, eventAPI, guidelineAPI, contactAPI } from "../services/api";
 import Navbar from "../components/Navbar";
+import { CheckCircle, Phone, Home, MessageCircle, Sparkles, Lock, Volume2, MapPin, Calendar, X, AlertCircle, Clock, CheckCircle2 } from "lucide-react";
 
 function AdminDashboard() {
   const token = localStorage.getItem("token");
@@ -9,6 +10,7 @@ function AdminDashboard() {
   const [incidents, setIncidents] = useState([]);
   const [remarksMap, setRemarksMap] = useState({});
   const [resetRequests, setResetRequests] = useState([]);
+  const [selectedIncident, setSelectedIncident] = useState(null);
   const [guideline, setGuideline] = useState({
     title: "",
     venue: "",
@@ -214,12 +216,12 @@ function AdminDashboard() {
         {/* DARK OVERLAY */}
         <div className="min-h-screen bg-gradient-to-b from-black/60 via-black/50 to-black/40">
           {/* ================= HEADER ================= */}
-          <section className="relative px-6 pt-32 text-center">
-            <div className="max-w-4xl p-10 mx-auto border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
-              <h1 className="mb-3 text-4xl font-bold text-gray-900">
+          <section className="relative px-6 pt-40 text-center pb-16">
+            <div className="max-w-4xl mx-auto">
+              <h1 className="mb-2 text-5xl font-bold text-white drop-shadow-lg">
                 Admin Dashboard
               </h1>
-              <p className="text-gray-700">
+              <p className="text-lg text-gray-100 drop-shadow">
                 Review, manage, and resolve neighbourhood incidents
               </p>
             </div>
@@ -227,96 +229,62 @@ function AdminDashboard() {
 
           {/* ================= STATS ================= */}
           <section className="px-6 mx-auto mt-16 max-w-7xl">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              <StatCard title="Total" value={incidents.length} />
-              <StatCard title="Pending" value={pending.length} color="text-yellow-600" />
-              <StatCard title="In Action" value={actioning.length} color="text-orange-600" />
-              <StatCard title="Resolved" value={resolved.length} color="text-green-600" />
-            </div>
-          </section>
-
-          {/* ================= INCIDENT LIST ================= */}
-          <section className="px-6 py-20 mx-auto max-w-7xl">
-            {incidents.length === 0 ? (
-              <p className="text-center text-white">
-                No complaints available
-              </p>
-            ) : (
-              <div className="space-y-8">
-                {incidents.map((incident) => (
-                  <div
-                    key={incident._id}
-                    className="bg-white/70 backdrop-blur-md
-                  rounded-3xl shadow-xl p-8
-                  transition-all duration-300
-                  hover:scale-[1.02] hover:shadow-2xl"
-                  >
-                    {/* HEADER */}
-                    <div className="flex flex-col gap-4 mb-4 md:flex-row md:justify-between md:items-center">
-                      <h3 className="text-xl font-semibold">
-                        {incident.title}
-                      </h3>
-                      <StatusBadge status={incident.status} />
-                    </div>
-
-                    <p className="mb-4 text-gray-700">
-                      {incident.description}
-                    </p>
-                    <textarea
-                      placeholder="Add admin remarks (visible to user)"
-                      value={remarksMap[incident._id] || incident.remarks || ""}
-                      onChange={(e) =>
-                        setRemarksMap({
-                          ...remarksMap,
-                          [incident._id]: e.target.value
-                        })
-                      }
-                      className="w-full p-3 mt-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
-                    />
-
-
-                    {/* REPORTER INFO */}
-                    <div className="grid grid-cols-1 gap-3 text-sm text-gray-700 md:grid-cols-2">
-                      <p><strong>Reporter:</strong> {incident.reportedBy?.name || "Anonymous"}</p>
-                      <p><strong>Phone:</strong> {incident.reportedBy?.phone || "N/A"}</p>
-                      <p><strong>Society:</strong> {incident.reportedBy?.society}</p>
-                      <p><strong>House:</strong> {incident.reportedBy?.houseNumber}</p>
-                    </div>
-
-                    {/* ACTIONS */}
-                    <div className="flex gap-3 mt-6">
-                      <div className="flex flex-wrap gap-3 mt-6">
-                        {incident.status !== "Actioning" && (
-                          <button
-                            onClick={() => updateIncident(incident._id, "Actioning")}
-                            className="px-5 py-2 text-white bg-orange-500 rounded-full"
-                          >
-                            Mark Actioning
-                          </button>
-                        )}
-
-                        {incident.status !== "Resolved" && (
-                          <button
-                            onClick={() => updateIncident(incident._id, "Resolved")}
-                            className="px-5 py-2 text-white bg-green-600 rounded-full"
-                          >
-                            Mark Resolved
-                          </button>
-                        )}
-
-                        <button
-                          onClick={() => deleteIncident(incident._id)}
-                          className="px-5 py-2 text-white bg-red-600 rounded-full"
-                        >
-                          Delete
-                        </button>
-                      </div>
-
-                    </div>
-                  </div>
-                ))}
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+              {/* LEFT: STATS COLUMN */}
+              <div className="lg:col-span-1 space-y-6">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1">
+                  <StatCard title="Total" value={incidents.length} color="text-blue-600" icon={Home} />
+                  <StatCard title="Pending" value={pending.length} color="text-yellow-600" icon={Clock} />
+                  <StatCard title="In Action" value={actioning.length} color="text-orange-600" icon={AlertCircle} />
+                  <StatCard title="Resolved" value={resolved.length} color="text-green-600" icon={CheckCircle2} />
+                </div>
               </div>
-            )}
+
+              {/* RIGHT: RECENT INCIDENTS COLUMN */}
+              <div className="lg:col-span-2">
+                <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 h-full">
+                  <h2 className="mb-6 text-2xl font-bold text-gray-900">Recent Incidents</h2>
+
+                  {incidents.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">No incidents available</p>
+                  ) : (
+                    <div className="space-y-4 max-h-[550px] overflow-y-auto pr-2">
+                      {incidents.slice(0, 8).map((incident) => (
+                        <div
+                          key={incident._id}
+                          onClick={() => setSelectedIncident(incident)}
+                          className="border-l-4 p-4 rounded-lg bg-gray-50 cursor-pointer"
+                          style={{
+                            borderColor: incident.status === "Pending"
+                              ? "#eab308"
+                              : incident.status === "Actioning"
+                                ? "#f97316"
+                                : "#22c55e"
+                          }}
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-gray-900">
+                                {incident.title}
+                              </h3>
+                              <p className="text-sm text-gray-600 mt-1">
+                                {incident.description.substring(0, 80)}...
+                              </p>
+                            </div>
+                            <StatusBadge status={incident.status} />
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs text-gray-500 mt-3">
+                            <span>📍 {incident.location || "Location N/A"}</span>
+                            <span>{new Date(incident.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
           </section>
 
           {/* ================= COMMUNITY GUIDELINES (2-COLUMN LAYOUT) ================= */}
@@ -324,9 +292,12 @@ function AdminDashboard() {
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
               {/* LEFT — COMMUNITY UPDATES (LIST) */}
               <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
-                <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                  📢 Community Updates
-                </h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <Volume2 className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Community Updates
+                  </h2>
+                </div>
 
                 {guidelinesList.length === 0 ? (
                   <p className="text-gray-600">No community updates posted yet</p>
@@ -344,12 +315,12 @@ function AdminDashboard() {
                           {item.description.substring(0, 100)}...
                         </p>
                         {item.venue && (
-                          <p className="mt-2 text-sm text-gray-600">
-                            📍 {item.venue}
+                          <p className="mt-2 text-sm text-gray-600 flex items-center gap-1">
+                            <MapPin className="w-4 h-4" /> {item.venue}
                           </p>
                         )}
-                        <p className="mt-2 text-xs text-gray-500">
-                          📅 {new Date(item.eventDateTime).toLocaleString()}
+                        <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" /> {new Date(item.eventDateTime).toLocaleString()}
                         </p>
                         <button
                           onClick={() => deleteGuideline(item._id)}
@@ -459,9 +430,12 @@ function AdminDashboard() {
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
               {/* LEFT — MANAGE EVENTS (LIST) */}
               <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
-                <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                  📅 Manage Events
-                </h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <Calendar className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Manage Events
+                  </h2>
+                </div>
 
                 {events.length === 0 ? (
                   <p className="text-gray-600">No events posted yet</p>
@@ -478,11 +452,11 @@ function AdminDashboard() {
                         <p className="mt-1 text-sm text-gray-700">
                           {event.description?.substring(0, 80)}...
                         </p>
-                        <p className="mt-2 text-sm text-gray-600">
-                          📍 {event.venue}
+                        <p className="mt-2 text-sm text-gray-600 flex items-center gap-1">
+                          <MapPin className="w-4 h-4" /> {event.venue}
                         </p>
-                        <p className="text-xs text-gray-500">
-                          📅 {new Date(event.eventDateTime).toLocaleString()}
+                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                          <Calendar className="w-3 h-3" /> {new Date(event.eventDateTime).toLocaleString()}
                         </p>
                         <button
                           onClick={() => deleteEvent(event._id)}
@@ -498,9 +472,12 @@ function AdminDashboard() {
 
               {/* RIGHT — ADD COMMUNITY EVENT (FORM) */}
               <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
-                <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                  ✨ Add Community Event
-                </h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <Sparkles className="w-6 h-6 text-purple-600" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Add Community Event
+                  </h2>
+                </div>
 
                 <div className="space-y-5">
                   <div>
@@ -592,9 +569,12 @@ function AdminDashboard() {
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
               {/* LEFT — MESSAGES & QUERIES */}
               <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
-                <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                  💬 Messages & Queries
-                </h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <MessageCircle className="w-6 h-6 text-blue-600" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Messages & Queries
+                  </h2>
+                </div>
 
                 {messages.length === 0 ? (
                   <p className="text-gray-600">No messages received</p>
@@ -608,8 +588,8 @@ function AdminDashboard() {
                         <p className="font-semibold text-gray-900">
                           {msg.sentBy?.name}
                         </p>
-                        <p className="mt-1 text-xs text-gray-600">
-                          📞 {msg.sentBy?.phone} • 🏠 {msg.sentBy?.society}
+                        <p className="mt-1 text-xs text-gray-600 flex items-center gap-2">
+                          <Phone className="w-3 h-3" /> {msg.sentBy?.phone} • <Home className="w-3 h-3" /> {msg.sentBy?.society}
                         </p>
                         <p className="mt-3 text-sm text-gray-700">
                           {msg.message}
@@ -631,9 +611,12 @@ function AdminDashboard() {
 
               {/* RIGHT — PASSWORD RESET REQUESTS */}
               <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
-                <h2 className="mb-6 text-2xl font-bold text-gray-900">
-                  🔐 Password Reset Requests
-                </h2>
+                <div className="flex items-center gap-3 mb-6">
+                  <Lock className="w-6 h-6 text-gray-700" />
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Password Reset Requests
+                  </h2>
+                </div>
 
                 {resetRequests.length === 0 ? (
                   <p className="text-gray-600">No pending reset requests</p>
@@ -651,7 +634,7 @@ function AdminDashboard() {
                                 className="p-4 border border-yellow-200 rounded-2xl bg-yellow-50/50"
                               >
                                 <p className="font-semibold text-gray-900">{req.name}</p>
-                                <p className="mt-1 text-sm text-gray-600">📞 {req.phone}</p>
+                                <p className="mt-1 text-sm text-gray-600 flex items-center gap-1"><Phone className="w-4 h-4" /> {req.phone}</p>
                                 <p className="mt-2 text-xs text-gray-700">Reason: {req.reason}</p>
                                 <p className="mt-1 text-xs text-gray-500">
                                   Requested: {new Date(req.createdAt).toLocaleDateString()}
@@ -703,7 +686,10 @@ function AdminDashboard() {
                     {/* APPROVED REQUESTS */}
                     {resetRequests.filter(req => req.status === "approved").length > 0 && (
                       <div className="mt-6">
-                        <h3 className="mb-3 font-semibold text-green-700">✅ Approved</h3>
+                        <div className="flex items-center gap-2 mb-3">
+                          <CheckCircle className="w-5 h-5 text-green-700" />
+                          <h3 className="font-semibold text-green-700">Approved</h3>
+                        </div>
                         <div className="space-y-2">
                           {resetRequests.filter(req => req.status === "approved").map((req) => (
                             <div key={req._id} className="p-3 border border-green-200 rounded-lg bg-green-50/50">
@@ -721,19 +707,150 @@ function AdminDashboard() {
           </section>
         </div>
       </div>
+
+      {/* ================= INCIDENT MODAL ================= */}
+      {selectedIncident && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col">
+            {/* MODAL HEADER - NOT SCROLLABLE */}
+            <div className="flex items-center justify-between p-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-t-3xl flex-shrink-0">
+              <h2 className="text-2xl font-bold text-white">{selectedIncident.title}</h2>
+              <button
+                onClick={() => setSelectedIncident(null)}
+                className="text-white hover:bg-white/20 p-2 rounded-lg transition flex-shrink-0"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* MODAL CONTENT - SCROLLABLE */}
+            <div className="overflow-y-auto flex-1 scrollbar-hide" style={{ scrollbarGutter: "stable" }}>
+              <div className="p-8 space-y-6">
+                {/* STATUS */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2">Status</h3>
+                  <StatusBadge status={selectedIncident.status} />
+                </div>
+
+                {/* DESCRIPTION */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
+                  <p className="text-gray-700 leading-relaxed">{selectedIncident.description}</p>
+                </div>
+
+                {/* LOCATION & DATE */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">Location</h3>
+                    <p className="text-gray-900 flex items-center gap-2">
+                      <MapPin className="w-4 h-4 text-blue-600" />
+                      {selectedIncident.location || "N/A"}
+                    </p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-600 mb-2">Reported On</h3>
+                    <p className="text-gray-900 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-blue-600" />
+                      {new Date(selectedIncident.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                {/* REPORTER INFO */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Reporter Information</h3>
+                  <div className="bg-gray-50 p-4 rounded-xl space-y-2">
+                    <p className="text-sm"><span className="font-semibold text-gray-900">Name:</span> <span className="text-gray-700">{selectedIncident.reportedBy?.name || "Anonymous"}</span></p>
+                    <p className="text-sm flex items-center gap-2"><Phone className="w-4 h-4 text-gray-600" /> <span className="font-semibold text-gray-900">Phone:</span> <span className="text-gray-700">{selectedIncident.reportedBy?.phone || "N/A"}</span></p>
+                    <p className="text-sm"><span className="font-semibold text-gray-900">Society:</span> <span className="text-gray-700">{selectedIncident.reportedBy?.society || "N/A"}</span></p>
+                    <p className="text-sm"><span className="font-semibold text-gray-900">House No:</span> <span className="text-gray-700">{selectedIncident.reportedBy?.houseNumber || "N/A"}</span></p>
+                  </div>
+                </div>
+
+                {/* REMARKS */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 mb-2">Admin Remarks</h3>
+                  <textarea
+                    placeholder="Add admin remarks (visible to user)..."
+                    value={remarksMap[selectedIncident._id] || selectedIncident.remarks || ""}
+                    onChange={(e) =>
+                      setRemarksMap({
+                        ...remarksMap,
+                        [selectedIncident._id]: e.target.value
+                      })
+                    }
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    rows="4"
+                  />
+                </div>
+
+                {/* ACTION BUTTONS */}
+                <div className="flex flex-wrap gap-3 pt-4 border-t">
+                  {selectedIncident.status !== "Actioning" && (
+                    <button
+                      onClick={() => {
+                        updateIncident(selectedIncident._id, "Actioning");
+                        setSelectedIncident(null);
+                      }}
+                      className="px-6 py-2 text-white bg-orange-500 rounded-lg hover:bg-orange-600 transition font-medium"
+                    >
+                      Mark Actioning
+                    </button>
+                  )}
+
+                  {selectedIncident.status !== "Resolved" && (
+                    <button
+                      onClick={() => {
+                        updateIncident(selectedIncident._id, "Resolved");
+                        setSelectedIncident(null);
+                      }}
+                      className="px-6 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 transition font-medium"
+                    >
+                      Mark Resolved
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      deleteIncident(selectedIncident._id);
+                      setSelectedIncident(null);
+                    }}
+                    className="px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition font-medium"
+                  >
+                    Delete
+                  </button>
+
+                  <button
+                    onClick={() => setSelectedIncident(null)}
+                    className="px-6 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-medium ml-auto"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
 /* ================= COMPONENTS ================= */
 
-function StatCard({ title, value, color = "text-blue-600" }) {
+function StatCard({ title, value, color = "text-blue-600", icon: Icon = AlertCircle }) {
   return (
     <div
-      className="p-8 text-center transition shadow-xl bg-white/70 backdrop-blur-md rounded-3xl hover:scale-105"
+      className="p-8 rounded-3xl transition shadow-2xl bg-gradient-to-br backdrop-blur-lg border border-white/20"
+      style={{
+        background: `linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%)`
+      }}
     >
-      <p className="mb-1 text-sm text-gray-600">{title}</p>
-      <p className={`text-4xl font-bold ${color}`}>{value}</p>
+      <div className="flex items-center justify-between mb-3">
+        <p className="text-sm font-medium text-gray-600">{title}</p>
+        <Icon className={`w-5 h-5 ${color}`} />
+      </div>
+      <p className={`text-5xl font-bold ${color}`}>{value}</p>
     </div>
   );
 }

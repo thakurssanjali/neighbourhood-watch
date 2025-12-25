@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { userAPI, guidelineAPI, eventAPI, incidentAPI } from "../services/api";
+import { Clipboard, User, Bell, MapPin, AlertTriangle, Calendar, Clock, Sparkles } from "lucide-react";
 
 const EVENT_GIFS = {
   Dance: "/images/event-gifs/dance.gif",
@@ -19,6 +20,7 @@ function Home() {
   const [incidents, setIncidents] = useState([]);
   const [activeStatus, setActiveStatus] = useState(null);
   const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
   const isLoggedIn = !!token;
   const [showMembers, setShowMembers] = useState(false);
   const [members, setMembers] = useState([]);
@@ -170,7 +172,7 @@ function Home() {
               {/* CTA BUTTON WITH ANIMATION */}
               <div className="pt-4">
                 <Link
-                  to={isLoggedIn ? "/user/dashboard" : "/login"}
+                  to={isLoggedIn ? (userRole === "admin" ? "/admin/dashboard" : "/user/dashboard") : "/login"}
                   className="inline-flex items-center gap-3 px-8 py-4 text-lg font-bold text-white transition-all duration-300 shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl hover:scale-105"
                 >
                   <span>{isLoggedIn ? " My Dashboard" : " Report an Incident"}</span>
@@ -242,8 +244,9 @@ function Home() {
 
               {/* Info badge */}
               <div className="absolute z-20 px-4 py-3 border bottom-4 left-4 right-4 bg-black/60 backdrop-blur-md rounded-xl border-white/20">
-                <p className="text-sm font-semibold text-white">
-                  ✨ Community Awareness in Action
+                <p className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <Sparkles className="w-4 h-4" />
+                  Community Awareness in Action
                 </p>
               </div>
             </div>
@@ -383,9 +386,12 @@ function Home() {
                 ✕
               </button>
 
-              <h2 className="mb-2 text-3xl font-bold">
-                📋 {activeStatus} Incidents
-              </h2>
+              <div className="flex items-center gap-2 mb-2">
+                <Clipboard className="w-7 h-7 text-blue-300" />
+                <h2 className="text-3xl font-bold">
+                  {activeStatus} Incidents
+                </h2>
+              </div>
               <p className="text-white/90">
                 {(activeStatus === "Total" ? incidents : incidents.filter(i => i.status === activeStatus)).length} incident{(activeStatus === "Total" ? incidents : incidents.filter(i => i.status === activeStatus)).length !== 1 ? "s" : ""} found
               </p>
@@ -440,11 +446,11 @@ function Home() {
                     {/* REPORTER & TIMESTAMP */}
                     <div className="flex items-center gap-4 mb-3 text-xs text-gray-600">
                       <div className="flex items-center gap-1">
-                        <span>👤</span>
+                        <User className="w-4 h-4" />
                         <span className="font-medium">{incident.reportedBy?.name || "Anonymous"}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span>🕒</span>
+                        <Clock className="w-4 h-4" />
                         <span>{new Date(incident.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                       </div>
                     </div>
@@ -452,7 +458,10 @@ function Home() {
                     {/* ADMIN NOTE */}
                     {incident.adminReason && (
                       <div className="p-3 mt-3 text-sm text-yellow-800 bg-yellow-100 border-l-2 border-yellow-500 rounded-lg">
-                        <strong className="block mb-1">⚠️ Admin Note:</strong>
+                        <div className="flex items-start gap-2 mb-1">
+                          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                          <strong>Admin Note:</strong>
+                        </div>
                         <span>{incident.adminReason}</span>
                       </div>
                     )}
@@ -493,14 +502,13 @@ function Home() {
               <p className="text-xl leading-relaxed text-gray-100 drop-shadow">
                 Stay informed about electricity and water updates, upcoming events, lost & found notices, help requests, and important community messages shared by society administrators.
               </p>
-
               <div className="flex gap-4 pt-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">📢</span>
+                  <Bell className="w-5 h-5 text-yellow-300" />
                   <span className="text-gray-100">Real-time Updates</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl">🔔</span>
+                  <Bell className="w-5 h-5 text-yellow-300" />
                   <span className="text-gray-100">Important Alerts</span>
                 </div>
               </div>
@@ -554,12 +562,12 @@ function Home() {
                   <div className="flex items-center gap-4 text-xs text-gray-600">
                     {item.venue && (
                       <div className="flex items-center gap-1">
-                        <span>�</span>
+                        <MapPin className="w-4 h-4" />
                         <span className="font-medium">{item.venue}</span>
                       </div>
                     )}
                     <div className="flex items-center gap-1">
-                      <span>⏰</span>
+                      <Clock className="w-4 h-4" />
                       <span>{new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                   </div>
@@ -680,8 +688,8 @@ function Home() {
                           </div>
 
                           {/* TIME */}
-                          <p className="text-xs text-gray-600">
-                            🕒 {new Date(ev.eventDateTime).toLocaleTimeString([], {
+                          <p className="text-xs text-gray-600 flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {new Date(ev.eventDateTime).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit"
                             })}
@@ -775,13 +783,16 @@ function Home() {
                 ✕
               </button>
 
-              <h3 className="text-2xl font-bold">
-                📅 {selectedDate.date.toLocaleDateString("en-US", {
-                  weekday: "long",
-                  month: "long",
-                  day: "numeric"
-                })}
-              </h3>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-6 h-6 text-blue-300" />
+                <h3 className="text-2xl font-bold">
+                  {selectedDate.date.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric"
+                  })}
+                </h3>
+              </div>
               <p className="mt-1 text-blue-100">
                 {selectedDate.events.length} event{selectedDate.events.length !== 1 ? "s" : ""} today
               </p>
@@ -805,8 +816,8 @@ function Home() {
                         <span className="inline-block px-3 py-1 text-xs font-bold text-white bg-blue-500 rounded-full">
                           {event.category}
                         </span>
-                        <p className="mt-2 text-sm text-gray-500">
-                          🕒 {new Date(event.eventDateTime).toLocaleTimeString([], {
+                        <p className="mt-2 text-sm text-gray-500 flex items-center gap-1">
+                          <Clock className="w-4 h-4" /> {new Date(event.eventDateTime).toLocaleTimeString([], {
                             hour: "2-digit",
                             minute: "2-digit"
                           })}
@@ -836,7 +847,8 @@ function Home() {
                     {/* EVENT VENUE */}
                     {event.venue && (
                       <div className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 rounded-lg bg-white/50">
-                        📍 <span className="font-medium">{event.venue}</span>
+                        <MapPin className="w-4 h-4" />
+                        <span className="font-medium">{event.venue}</span>
                       </div>
                     )}
                   </div>

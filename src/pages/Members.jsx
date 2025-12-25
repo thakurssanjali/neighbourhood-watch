@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { userAPI } from "../services/api";
+import { Users, Search, User, MapPin, Building, Home, Phone } from "lucide-react";
 
 function Members() {
   const [members, setMembers] = useState([]);
@@ -41,7 +42,7 @@ function Members() {
                       Meet the active residents building our safer neighbourhood
                     </p>
                   </div>
-                  <div className="text-5xl">👥</div>
+                  <Users className="w-12 h-12 text-blue-600" />
                 </div>
                 <div className="pt-4 border-t border-gray-200">
                   <p className="text-sm font-semibold text-blue-600">
@@ -61,7 +62,7 @@ function Members() {
             </div>
           ) : members.length === 0 ? (
             <div className="text-center py-20">
-              <div className="text-6xl mb-4">🔍</div>
+              <Search className="w-16 h-16 mx-auto mb-4 text-gray-400" />
               <p className="text-2xl text-gray-300 font-semibold mb-2">
                 No Members Yet
               </p>
@@ -82,11 +83,11 @@ function Members() {
                       <h3 className="text-xl font-bold text-gray-900 mb-1">
                         {user.name}
                       </h3>
-                      <p className="text-sm text-blue-600 font-semibold">
-                        📞 {user.phone}
+                      <p className="text-sm text-blue-600 font-semibold flex items-center gap-1">
+                        <Phone className="w-4 h-4" /> {user.phone}
                       </p>
                     </div>
-                    <span className="text-3xl">👤</span>
+                    <User className="w-7 h-7 text-gray-400" />
                   </div>
 
                   {/* DIVIDER */}
@@ -95,7 +96,7 @@ function Members() {
                   {/* MEMBER INFO */}
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">📍</span>
+                      <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-xs text-gray-500">Location</p>
                         <p className="text-sm font-medium text-gray-900">
@@ -105,7 +106,7 @@ function Members() {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">🏘</span>
+                      <Building className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-xs text-gray-500">Society</p>
                         <p className="text-sm font-medium text-gray-900">
@@ -115,7 +116,7 @@ function Members() {
                     </div>
 
                     <div className="flex items-start gap-3">
-                      <span className="text-lg mt-0.5">🏠</span>
+                      <Home className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
                       <div>
                         <p className="text-xs text-gray-500">House Number</p>
                         <p className="text-sm font-medium text-gray-900">

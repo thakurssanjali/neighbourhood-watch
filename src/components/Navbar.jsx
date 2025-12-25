@@ -52,7 +52,7 @@ export default function Navbar() {
           <img
             src="/images/logo.png"
             alt="ReportIT Logo"
-            className="w-auto h-20 drop-shadow-md"
+            className="w-auto h-16 drop-shadow-md"
           />
         </Link>
 
@@ -144,11 +144,10 @@ function NavItem({ to, href, label, isActive, onHomeClick, onIncidentsClick }) {
     <Link
       to={to}
       onClick={to === "/" ? onHomeClick : undefined}
-      className={`relative text-base font-semibold transition nav-link ${
-        isActive
+      className={`relative text-base font-semibold transition nav-link ${isActive
           ? "text-white font-bold"
           : "text-gray-100 hover:text-white dark:text-gray-200 dark:hover:text-white"
-      }`}
+        }`}
     >
       {label}
     </Link>
