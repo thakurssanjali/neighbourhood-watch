@@ -37,7 +37,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes Documentation
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.json({
     message: "Welcome to Neighbourhood Watch API",
     version: "1.0.0",
@@ -86,15 +86,15 @@ app.get("/", (req, res) => {
   });
 });
 
-// Routes - mounted without /api prefix since Vercel routing handles that
-app.use("/auth", authRoutes);
-app.use("/users", userRoutes);
-app.use("/incidents", incidentRoutes);
-app.use("/events", eventRoutes);
-app.use("/guidelines", guidelineRoutes);
-app.use("/contact", contactRoutes);
-app.use("/admin", adminRoutes);
-app.use("/password", passwordResetRoutes);
+// Routes - mounted with /api prefix
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/incidents", incidentRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/guidelines", guidelineRoutes);
+app.use("/api/contact", contactRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/password", passwordResetRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
