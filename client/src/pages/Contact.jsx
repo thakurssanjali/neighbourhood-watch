@@ -1,6 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api` 
+  : "http://localhost:5000/api";
 
 function Contact() {
   const [message, setMessage] = useState("");
@@ -20,7 +25,7 @@ function Contact() {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/contact",
+        `${API_BASE_URL}/contact`,
         { message },
         {
           headers: {
@@ -38,139 +43,153 @@ function Contact() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center relative flex items-center justify-center px-6"
+      className="relative min-h-screen bg-center bg-cover"
       style={{ backgroundImage: "url('/images/hero.webp')" }}
     >
-      <div className="absolute inset-0 bg-black/60"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/40"></div>
+
+      <Navbar />
 
       {/* MAIN CONTAINER */}
-      <div className="relative z-10 max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-6 py-32">
+        <div className="grid w-full max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2">
 
-        {/* ================= LEFT: CONTACT INFO ================= */}
-        <div
-          className="bg-white/10 backdrop-blur-xl
-          rounded-3xl shadow-2xl p-10 text-white"
-        >
-          <h1 className="text-5xl font-extrabold mb-6 drop-shadow-lg">
-            Contact<br />Administration
-          </h1>
-
-          <p className="text-lg text-gray-200 mb-8 leading-relaxed">
-            Reach out to your society administration for support,
-            suggestions, emergency issues, or general queries.
-          </p>
-
-          <div className="space-y-6 text-gray-100">
+          {/* ================= LEFT: CONTACT INFO ================= */}
+          <div className="space-y-8">
+            {/* HEADER */}
             <div>
-              <p className="text-sm uppercase tracking-widest text-gray-300">
-                Office Address
-              </p>
-              <p className="text-lg font-medium">
-                Green Valley Society, Block A<br />
-                Sector 22, New City
+              <h1 className="mb-4 text-5xl font-black leading-tight text-white lg:text-6xl drop-shadow-lg">
+                Get in Touch
+              </h1>
+              <p className="text-xl text-gray-100 drop-shadow">
+                Reach out to the administration for any queries or support
               </p>
             </div>
 
-            <div>
-              <p className="text-sm uppercase tracking-widest text-gray-300">
-                Phone
-              </p>
-              <p className="text-lg font-medium">
-                +91 98765 43210
-              </p>
-            </div>
+            {/* INFO CARDS */}
+            <div className="space-y-4">
+              {/* ADDRESS CARD */}
+              <div className="p-6 transition-all shadow-lg bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-xl">
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl">📍</span>
+                  <div>
+                    <p className="mb-1 text-sm font-semibold text-blue-600">
+                      OFFICE ADDRESS
+                    </p>
+                    <p className="text-lg font-medium text-gray-900">
+                      Green Valley Society, Block A<br />
+                      Sector 22, New City
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            <div>
-              <p className="text-sm uppercase tracking-widest text-gray-300">
-                Email
-              </p>
-              <p className="text-lg font-medium">
-                admin@reportit.community
-              </p>
-            </div>
+              {/* PHONE CARD */}
+              <div className="p-6 transition-all shadow-lg bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-xl">
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl">📞</span>
+                  <div>
+                    <p className="mb-1 text-sm font-semibold text-blue-600">
+                      PHONE
+                    </p>
+                    <p className="text-lg font-medium text-gray-900">
+                      +91 98765 43210
+                    </p>
+                  </div>
+                </div>
+              </div>
 
-            <div className="pt-6">
-              <Link
-                to="/"
-                className="inline-flex items-center gap-2
-                text-sm text-gray-200 hover:text-white transition"
-              >
-                ← Back to Home
-              </Link>
+              {/* EMAIL CARD */}
+              <div className="p-6 transition-all shadow-lg bg-white/95 backdrop-blur-md rounded-2xl hover:shadow-xl">
+                <div className="flex items-start gap-4">
+                  <span className="text-3xl">✉️</span>
+                  <div>
+                    <p className="mb-1 text-sm font-semibold text-blue-600">
+                      EMAIL
+                    </p>
+                    <p className="text-lg font-medium text-gray-900">
+                      admin@reportit.community
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* ================= RIGHT: MESSAGE FORM ================= */}
-        <div
-          className="bg-white/70 backdrop-blur-xl
-          rounded-3xl shadow-2xl p-10"
-        >
-          <h2 className="text-3xl font-bold mb-4">
-            Send a Message
-          </h2>
+          {/* ================= RIGHT: MESSAGE FORM ================= */}
+          <div className="p-10 shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl">
+            {/* HEADER */}
+            <div className="mb-8">
+              <h2 className="mb-2 text-3xl font-bold text-gray-900">
+                Send a Message
+              </h2>
+              <p className="text-gray-600">
+                Write directly to the administration. Messages are visible only to admins.
+              </p>
+            </div>
 
-          <p className="text-gray-700 mb-6">
-            Write directly to the society administration.
-            Messages are visible only to admins.
-          </p>
+            {/* FORM */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-900">
+                  Your Message *
+                </label>
+                <textarea
+                  rows="7"
+                  placeholder="Write your message here..."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <textarea
-              rows="6"
-              placeholder="Write your message here..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="w-full px-4 py-4 rounded-2xl border
-              bg-white/90
-              focus:outline-none focus:ring-2 focus:ring-black"
-            />
+              <button
+                type="submit"
+                className="w-full py-3 font-bold text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg"
+              >
+                Send Message
+              </button>
+            </form>
 
-            <button
-              type="submit"
-              className="w-full bg-black text-white
-              py-3 rounded-full font-medium
-              transition-all duration-300
-              hover:bg-gray-900 hover:shadow-lg"
-            >
-              Send Message
-            </button>
-          </form>
+            <p className="mt-6 text-xs text-center text-gray-500">
+              All messages are securely transmitted and viewable only by admins.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* ================= POPUPS ================= */}
       {popup && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+          <div className="w-full max-w-sm p-8 text-center bg-white shadow-2xl rounded-2xl animate-fadeInUp">
             {popup === "login" ? (
               <>
-                <h3 className="text-xl font-bold mb-3">
+                <div className="mb-4 text-5xl">🔐</div>
+                <h3 className="mb-2 text-2xl font-bold text-gray-900">
                   Login Required
                 </h3>
-                <p className="text-gray-600 mb-6">
-                  Please login to send a message.
+                <p className="mb-6 text-gray-600">
+                  Please login to send a message to the administration.
                 </p>
                 <Link
                   to="/login"
-                  className="inline-block bg-black text-white
-                  px-6 py-2 rounded-full"
+                  className="inline-block px-6 py-2 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                 >
                   Go to Login
                 </Link>
               </>
             ) : (
               <>
-                <h3 className="text-xl font-bold mb-3">
+                <div className="mb-4 text-5xl">✅</div>
+                <h3 className="mb-2 text-2xl font-bold text-gray-900">
                   Message Sent
                 </h3>
-                <p className="text-gray-600 mb-6">
-                  Your message has been sent successfully.
+                <p className="mb-6 text-gray-600">
+                  Your message has been sent successfully to the administration.
                 </p>
                 <button
                   onClick={() => setPopup(null)}
-                  className="bg-black text-white
-                  px-6 py-2 rounded-full"
+                  className="px-6 py-2 font-semibold text-white transition-all rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                 >
                   Done
                 </button>

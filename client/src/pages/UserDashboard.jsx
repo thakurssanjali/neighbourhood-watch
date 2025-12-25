@@ -65,144 +65,272 @@ function UserDashboard() {
       className="min-h-screen bg-fixed bg-center bg-cover"
       style={{ backgroundImage: "url('/images/hero.webp')" }}
     >
-      <div className="min-h-screen bg-black/20">
+      <div className="min-h-screen bg-gradient-to-br from-black/40 via-black/30 to-black/40">
 
         <Navbar />
 
-        {/* ================= HERO ================= */}
-        <section className="px-6 pt-32 text-center">
-          <div
-            className="max-w-4xl p-10 mx-auto shadow-xl bg-white/70 backdrop-blur-md rounded-3xl"
-          >
-            <h1 className="mb-4 text-4xl font-bold">
-              Your Dashboard
-            </h1>
+        {/* ================= HERO SECTION ================= */}
+        <section className="relative px-6 pt-32 pb-20">
+          <div className="max-w-6xl mx-auto">
+            {/* HEADER CARD */}
+            <div className="overflow-hidden shadow-2xl rounded-3xl bg-white/95 backdrop-blur-xl">
+              {/* Gradient header */}
+              <div className="h-2 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600"></div>
+              
+              <div className="p-12">
+                <div className="flex items-start justify-between mb-6">
+                  <div>
+                    <h1 className="mb-2 text-5xl font-black text-gray-900">
+                      Your Dashboard
+                    </h1>
+                    <p className="text-lg text-gray-600">
+                      Track and manage your complaints in real-time
+                    </p>
+                  </div>
+                  
+                </div>
 
-            <p className="mb-8 text-gray-700">
-              Register new complaints and track their resolution status
-            </p>
+                <div className="pt-4 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="inline-flex items-center gap-2 px-8 py-4 text-lg font-bold text-white transition-all duration-300 shadow-lg bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl hover:scale-105"
+                  >
+                    
+                    <span>Register a New Complaint</span>
+                    <span>→</span>
+                  </button>
+                </div>
+              </div>
+            </div>
 
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-black text-white
-              px-8 py-3 rounded-full
-              transition hover:bg-gray-900
-              hover:shadow-[0_0_25px_rgba(0,0,0,0.4)]"
-            >
-              Register a Complaint
-            </button>
+            {/* STATS GRID */}
+            <div className="grid grid-cols-1 gap-6 mt-10 md:grid-cols-3">
+              <div className="p-6 border-l-4 border-yellow-500 shadow-lg bg-white/90 backdrop-blur-md rounded-2xl">
+                <p className="mb-2 text-sm text-gray-600">🟡 Pending</p>
+                <p className="text-4xl font-bold text-yellow-600">
+                  {incidents.filter(i => i.status === "Pending").length}
+                </p>
+              </div>
+              <div className="p-6 border-l-4 border-orange-500 shadow-lg bg-white/90 backdrop-blur-md rounded-2xl">
+                <p className="mb-2 text-sm text-gray-600">🟠 In Action</p>
+                <p className="text-4xl font-bold text-orange-600">
+                  {incidents.filter(i => i.status === "Actioning").length}
+                </p>
+              </div>
+              <div className="p-6 border-l-4 border-green-500 shadow-lg bg-white/90 backdrop-blur-md rounded-2xl">
+                <p className="mb-2 text-sm text-gray-600">🟢 Resolved</p>
+                <p className="text-4xl font-bold text-green-600">
+                  {incidents.filter(i => i.status === "Resolved").length}
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* ================= MY COMPLAINTS ================= */}
-        <section className="px-6 py-20 mx-auto max-w-7xl">
-          <h2 className="mb-10 text-3xl font-bold text-center text-white">
-            My Complaints
-          </h2>
+        {/* ================= MY COMPLAINTS SECTION ================= */}
+        <section className="max-w-6xl px-6 py-20 mx-auto">
+          <div className="mb-12">
+            <h2 className="mb-2 text-4xl font-black text-white">
+              My Complaints
+            </h2>
+            <p className="text-gray-200">
+              {incidents.length === 0 
+                ? "No complaints registered yet" 
+                : `${incidents.length} complaint${incidents.length !== 1 ? 's' : ''} registered`}
+            </p>
+          </div>
 
           {incidents.length === 0 ? (
-            <p className="text-center text-white">
-              You have not registered any complaints yet.
-            </p>
+            <div className="py-20 text-center">
+              <div className="mb-4 text-6xl">📋</div>
+              <p className="mb-2 text-2xl font-semibold text-gray-300">
+                No Complaints Yet
+              </p>
+              <p className="mb-8 text-gray-400">
+                Register a new complaint to get started with tracking issues in your community
+              </p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="px-6 py-3 font-semibold text-white transition-colors bg-blue-600 rounded-xl hover:bg-blue-700"
+              >
+                Register Your First Complaint
+              </button>
+            </div>
           ) : (
-            <div className="space-y-8">
+            <div className="space-y-6">
               {incidents.map((incident) => (
                 <div
                   key={incident._id}
-                  className="bg-white/70 backdrop-blur-md
-                  rounded-3xl shadow-xl p-8
-                  transition hover:scale-[1.02]"
+                  className={`border-l-4 bg-gradient-to-r p-6 rounded-2xl backdrop-blur-md shadow-lg hover:shadow-xl transition-all ${
+                    incident.status === "Pending"
+                      ? "border-yellow-500 from-yellow-50 to-transparent bg-white/90"
+                      : incident.status === "Actioning"
+                      ? "border-orange-500 from-orange-50 to-transparent bg-white/90"
+                      : "border-green-500 from-green-50 to-transparent bg-white/90"
+                  }`}
                 >
-                  <div className="flex flex-col gap-4 mb-3 md:flex-row md:justify-between md:items-center">
-                    <h3 className="text-xl font-semibold">
-                      {incident.title}
-                    </h3>
-                    <StatusBadge status={incident.status} />
+                  {/* HEADER */}
+                  <div className="flex flex-col items-start justify-between gap-4 mb-4 md:flex-row md:items-center">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-2xl font-bold text-gray-900">
+                          {incident.title}
+                        </h3>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <StatusBadge status={incident.status} />
+                        {incident.category && (
+                          <span className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded-full">
+                            {incident.category}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
 
-                  <p className="mb-3 text-gray-700">
+                  {/* DESCRIPTION */}
+                  <p className="mb-4 leading-relaxed text-gray-700">
                     {incident.description}
                   </p>
 
-                  <p className="mt-4 text-xs text-gray-500">
-                    Submitted on{" "}
-                    {new Date(incident.createdAt).toLocaleString()}
-                  </p>
+                  {/* METADATA */}
+                  <div className="flex flex-wrap gap-6 pt-4 text-sm text-gray-600 border-t border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <span>📍</span>
+                      <span>{incident.location || "Location not provided"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>📅</span>
+                      <span>{new Date(incident.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span>⏰</span>
+                      <span>{new Date(incident.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                    </div>
+                  </div>
+
+                  {/* ADMIN NOTE */}
+                  {incident.adminReason && (
+                    <div className="p-3 mt-4 bg-yellow-100 border-l-2 border-yellow-500 rounded-lg">
+                      <p className="text-sm text-yellow-800">
+                        <strong>⚠️ Admin Note:</strong> {incident.adminReason}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </section>
 
-        {/* ================= MODAL ================= */}
+        {/* ================= REGISTER COMPLAINT MODAL ================= */}
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div
-              className="w-full max-w-xl p-8 shadow-2xl bg-white/80 backdrop-blur-xl rounded-3xl"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-2xl font-bold">
-                  Register New Complaint
-                </h2>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+            <div className="w-full max-w-2xl overflow-hidden bg-white shadow-2xl rounded-2xl animate-fadeInUp">
+              {/* HEADER WITH GRADIENT */}
+              <div className="relative p-6 text-white bg-gradient-to-r from-blue-600 to-blue-800">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="text-xl font-bold"
+                  className="absolute text-2xl font-bold transition-transform top-4 right-4 hover:scale-110"
                 >
                   ✕
                 </button>
+
+                <h2 className="mb-2 text-3xl font-bold">
+                  Register a New Complaint
+                </h2>
+                <p className="text-blue-100">
+                  Describe the issue and help us improve your community
+                </p>
               </div>
 
-              <form onSubmit={submitComplaint} className="space-y-4">
-                <input
-                  name="title"
-                  placeholder="Complaint Title"
-                  value={formData.title}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-black"
-                />
+              {/* FORM */}
+              <form onSubmit={submitComplaint} className="p-8 space-y-5">
+                {/* TITLE */}
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Complaint Title *
+                  </label>
+                  <input
+                    name="title"
+                    placeholder="e.g., Broken streetlight near park"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-black"
-                >
-                  <option value="">Select Category</option>
-                  <option>Street Light</option>
-                  <option>Garbage</option>
-                  <option>Water Supply</option>
-                  <option>Noise</option>
-                  <option>Theft</option>
-                  <option>Other</option>
-                </select>
+                {/* CATEGORY */}
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Category *
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  >
+                    <option value="">Select a category</option>
+                    <option>Street Light</option>
+                    <option>Garbage</option>
+                    <option>Water Supply</option>
+                    <option>Noise</option>
+                    <option>Theft</option>
+                    <option>Road Damage</option>
+                    <option>Other</option>
+                  </select>
+                </div>
 
-                <textarea
-                  name="description"
-                  placeholder="Describe the issue"
-                  value={formData.description}
-                  onChange={handleChange}
-                  rows="4"
-                  required
-                  className="w-full px-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-black"
-                />
+                {/* LOCATION */}
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Location / Area *
+                  </label>
+                  <input
+                    name="location"
+                    placeholder="e.g., Main Street, Sector 5"
+                    value={formData.location}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-                <input
-                  name="location"
-                  placeholder="Location / Area"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 border rounded-full focus:outline-none focus:ring-2 focus:ring-black"
-                />
+                {/* DESCRIPTION */}
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Description *
+                  </label>
+                  <textarea
+                    name="description"
+                    placeholder="Provide detailed information about the issue..."
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows="5"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3 font-medium text-white transition bg-black rounded-full hover:bg-gray-900"
-                >
-                  Submit Complaint
-                </button>
+                {/* BUTTONS */}
+                <div className="flex gap-4 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="flex-1 py-3 font-semibold text-gray-700 transition-colors bg-gray-100 rounded-lg hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-3 font-bold text-white transition-all rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-lg"
+                  >
+                    Submit Complaint
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -213,19 +341,25 @@ function UserDashboard() {
   );
 }
 
-/* ================= STATUS BADGE ================= */
-
+/* ================= STATUS BADGE COMPONENT ================= */
 function StatusBadge({ status }) {
   const styles = {
-    Pending: "bg-yellow-100 text-yellow-700",
-    Actioning: "bg-orange-100 text-orange-700",
-    Resolved: "bg-green-100 text-green-700"
+    Pending: "bg-yellow-500 text-white",
+    Actioning: "bg-orange-500 text-white",
+    Resolved: "bg-green-500 text-white"
+  };
+
+  const icons = {
+    Pending: "🟡",
+    Actioning: "🟠",
+    Resolved: "🟢"
   };
 
   return (
     <span
-      className={`px-4 py-1 rounded-full text-sm font-medium ${styles[status]}`}
+      className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold ${styles[status]}`}
     >
+      <span>{icons[status]}</span>
       {status}
     </span>
   );

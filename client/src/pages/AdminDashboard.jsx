@@ -1,201 +1,38 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import { useEffect, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
+import Navbar from "../components/Navbar";
+
+const API_BASE_URL = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api` 
+  : "http://localhost:5000/api";
 
 function AdminDashboard() {
+  const token = localStorage.getItem("token");
+
   const [incidents, setIncidents] = useState([]);
   const [remarksMap, setRemarksMap] = useState({});
-  const [resetPhone, setResetPhone] = useState("");
-  const [newPassword, setNewPassword] = useState("");
   const [resetRequests, setResetRequests] = useState([]);
-  const [passwordMap, setPasswordMap] = useState({});
-const [showNewPassword, setShowNewPassword] = useState(false);
+  const [guideline, setGuideline] = useState({
+    title: "",
+    venue: "",
+    description: "",
+    date: "",
+    time: ""
+  });
+  const [guidelinesList, setGuidelinesList] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [eventData, setEventData] = useState({
+    title: "",
+    category: "",
+    venue: "",
+    description: "",
+    eventDateTime: ""
+  });
 
-
-const [guideline, setGuideline] = useState({
-  title: "",
-  venue: "",
-  description: "",
-  date: "",
-  time: ""
-});
-const [guidelinesList, setGuidelinesList] = useState([]);
-
-const [messages, setMessages] = useState([]);
-
-const [events, setEvents] = useState([]);
-
-const createEvent = async () => {
-  try {
-    await axios.post(
-      "http://localhost:5000/api/events",
-      {
-        title: eventData.title,
-        category: eventData.category,
-        venue: eventData.venue,
-        description: eventData.description,
-        eventDateTime: eventData.eventDateTime
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-
-    alert("Event posted successfully");
-
-    setEventData({
-      title: "",
-      category: "",
-      venue: "",
-      description: "",
-      eventDateTime: ""
-    });
-    
-
-  }  catch (err) {
-  if (err.response?.status === 409) {
-    alert("An event already exists at this date and time");
-  } else {
-    alert("Failed to add event");
-  }
-}
-
-};
-const fetchGuidelines = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/guidelines/public",
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setGuidelinesList(res.data);
-  } catch {
-    alert("Failed to fetch guidelines");
-  }
-};
-
-
-const resetUserPassword = async (requestId, phone) => {
-  const newPassword = passwordMap[requestId];
-
-  if (!newPassword) {
-    alert("Please enter a new password");
-    return;
-  }
-
-  await axios.post(
-    "http://localhost:5000/api/admin/reset-password",
-    {
-      requestId,
-      phone,
-      newPassword
-    },
-    {
-      headers: { Authorization: `Bearer ${token}` }
-    }
-  );
-
-  alert("Password reset successfully");
-  fetchResetRequests();
-};
-
-
-const fetchResetRequests = async () => {
-  const res = await axios.get(
-    "http://localhost:5000/api/admin/password-reset-requests",
-    {
-      headers: { Authorization: `Bearer ${token}` }
-    }
-  );
-  setResetRequests(res.data);
-};
-
-
-const deleteEvent = async (id) => {
-  await axios.delete(
-    `http://localhost:5000/api/events/${id}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  fetchEvents();
-};
-
-const handleEventChange = (e) => {
-  setEventData({ ...eventData, [e.target.name]: e.target.value });
-};
-
-const postGuideline = async () => {
-  try {
-    const eventDateTime = new Date(
-      `${guideline.date}T${guideline.time}`
-    );
-
-    await axios.post(
-      "http://localhost:5000/api/guidelines",
-      {
-        title: guideline.title,
-        venue: guideline.venue,
-        description: guideline.description,
-        eventDateTime
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-
-    alert("Guideline posted successfully");
-
-    setGuideline({
-      title: "",
-      venue: "",
-      description: "",
-      date: "",
-      time: ""
-    });
-
-  } catch (err) {
-    console.error(err.response?.data || err.message);
-    alert("Failed to post guideline");
-  }
-};
-
-const deleteGuideline = async (id) => {
-  if (!window.confirm("Delete this community update?")) return;
-
-  try {
-    await axios.delete(
-      `http://localhost:5000/api/guidelines/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    setGuidelinesList(
-      guidelinesList.filter((g) => g._id !== id)
-    );
-  } catch {
-    alert("Failed to delete guideline");
-  }
-};
-
-
-
-  const token = localStorage.getItem("token");
-  const navigate = useNavigate();
-
-const handleLogout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("role");
-  navigate("/login");
-};
-
-const [eventData, setEventData] = useState({
-  title: "",
-  category: "",
-  venue: "",
-  description: "",
-  eventDateTime: ""
-});
-
-
-  const fetchIncidents = async () => {
+  // Fetch functions wrapped in useCallback
+  const fetchIncidents = useCallback(async () => {
     try {
       const res = await axios.get(
         "http://localhost:5000/api/incidents",
@@ -207,141 +44,255 @@ const [eventData, setEventData] = useState({
     } catch {
       alert("Failed to fetch incidents");
     }
+  }, [token]);
+
+  const fetchEvents = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/events",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setEvents(res.data);
+    } catch {
+      alert("Failed to fetch events");
+    }
+  }, [token]);
+
+  const fetchGuidelines = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/guidelines/public",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setGuidelinesList(res.data);
+    } catch {
+      alert("Failed to fetch guidelines");
+    }
+  }, [token]);
+
+  const fetchMessages = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/contact",
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setMessages(res.data);
+    } catch {
+      alert("Failed to load messages");
+    }
+  }, [token]);
+
+  const fetchResetRequests = useCallback(async () => {
+    try {
+      const res = await axios.get(
+        "http://localhost:5000/api/password/reset-requests",
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      setResetRequests(res.data);
+    } catch (err) {
+      console.error("Failed to fetch reset requests:", err.message);
+    }
+  }, [token]);
+
+  // Action handlers
+  const updateIncident = useCallback(async (id, status) => {
+    try {
+      await axios.put(
+        `http://localhost:5000/api/incidents/${id}`,
+        {
+          status,
+          remarks: remarksMap[id] || ""
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      await fetchIncidents();
+    } catch {
+      alert("Failed to update incident");
+    }
+  }, [token, remarksMap, fetchIncidents]);
+
+  const deleteIncident = useCallback(async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/incidents/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      await fetchIncidents();
+    } catch {
+      alert("Failed to delete incident");
+    }
+  }, [token, fetchIncidents]);
+
+  const createEvent = useCallback(async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/events",
+        {
+          title: eventData.title,
+          category: eventData.category,
+          venue: eventData.venue,
+          description: eventData.description,
+          eventDateTime: eventData.eventDateTime
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+
+      alert("Event posted successfully");
+      setEventData({
+        title: "",
+        category: "",
+        venue: "",
+        description: "",
+        eventDateTime: ""
+      });
+      await fetchEvents();
+    } catch (err) {
+      if (err.response?.status === 409) {
+        alert("An event already exists at this date and time");
+      } else {
+        alert("Failed to add event");
+      }
+    }
+  }, [token, eventData, fetchEvents]);
+
+  const handleEventChange = (e) => {
+    setEventData({ ...eventData, [e.target.name]: e.target.value });
   };
 
- const updateIncident = async (id, status) => {
-  await axios.put(
-    `http://localhost:5000/api/incidents/${id}`,
-    {
-      status,
-      remarks: remarksMap[id] || ""
-    },
-    {
-      headers: { Authorization: `Bearer ${token}` }
+  const deleteEvent = useCallback(async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/events/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      await fetchEvents();
+    } catch {
+      alert("Failed to delete event");
     }
-  );
-  fetchIncidents();
-};
+  }, [token, fetchEvents]);
 
-  
+  const postGuideline = useCallback(async () => {
+    try {
+      const eventDateTime = new Date(
+        `${guideline.date}T${guideline.time}`
+      );
 
-  const deleteIncident = async (id) => {
-    await axios.delete(
-      `http://localhost:5000/api/incidents/${id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-    fetchIncidents();
-  };
+      await axios.post(
+        "http://localhost:5000/api/guidelines",
+        {
+          title: guideline.title,
+          venue: guideline.venue,
+          description: guideline.description,
+          eventDateTime
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
 
-const fetchEvents = async () => {
-  const res = await axios.get(
-    "http://localhost:5000/api/events",
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  setEvents(res.data);
-};
+      alert("Guideline posted successfully");
 
-const fetchMessages = async () => {
-  try {
-    const res = await axios.get(
-      "http://localhost:5000/api/contact",
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
-    );
-    setMessages(res.data);
-  } catch {
-    alert("Failed to load messages");
-  }
-};
-
-const deleteMessage = async (id) => {
-  await axios.delete(
-    `http://localhost:5000/api/contact/${id}`,
-    {
-      headers: { Authorization: `Bearer ${token}` }
+      setGuideline({
+        title: "",
+        venue: "",
+        description: "",
+        date: "",
+        time: ""
+      });
+      await fetchGuidelines();
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      alert("Failed to post guideline");
     }
-  );
-  fetchMessages();
-};
+  }, [token, guideline, fetchGuidelines]);
 
-useEffect(() => {
-  fetchIncidents();
-  fetchEvents();
-  fetchGuidelines();
-  fetchMessages();
-  fetchResetRequests();
+  const deleteGuideline = useCallback(async (id) => {
+    if (!window.confirm("Delete this community update?")) return;
 
-}, []);
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/guidelines/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setGuidelinesList(
+        guidelinesList.filter((g) => g._id !== id)
+      );
+    } catch {
+      alert("Failed to delete guideline");
+    }
+  }, [token, guidelinesList]);
+
+  const deleteMessage = useCallback(async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:5000/api/contact/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
+      await fetchMessages();
+    } catch {
+      alert("Failed to delete message");
+    }
+  }, [token, fetchMessages]);
+
+  // useEffect to load data
+  useEffect(() => {
+    const loadData = async () => {
+      await fetchIncidents();
+      await fetchEvents();
+      await fetchGuidelines();
+      await fetchMessages();
+      await fetchResetRequests();
+    };
+    loadData();
+  }, [fetchIncidents, fetchEvents, fetchGuidelines, fetchMessages, fetchResetRequests]);
 
   const pending = incidents.filter(i => i.status === "Pending");
   const actioning = incidents.filter(i => i.status === "Actioning");
   const resolved = incidents.filter(i => i.status === "Resolved");
 
   return (
-    <div
-      className="min-h-screen bg-fixed bg-center bg-cover"
-      style={{ backgroundImage: "url('/images/hero.webp')" }}
-    >
-      {/* Optional dark overlay for readability */}
-      <div className="min-h-screen bg-black/20">
-      {/* ================= NAVBAR ================= */}
-<nav className="absolute top-0 left-0 z-30 w-full pt-6">
-  <div className="relative flex items-center justify-center px-6">
+    <>
+      <Navbar />
+      <div
+        className="min-h-screen bg-fixed bg-center bg-cover"
+        style={{ backgroundImage: "url('/images/hero.webp')" }}
+      >
+        {/* DARK OVERLAY */}
+        <div className="min-h-screen bg-gradient-to-b from-black/60 via-black/50 to-black/40">
+          {/* ================= HEADER ================= */}
+          <section className="relative px-6 pt-32 text-center">
+            <div className="max-w-4xl p-10 mx-auto border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h1 className="mb-3 text-4xl font-bold text-gray-900">
+                Admin Dashboard
+              </h1>
+              <p className="text-gray-700">
+                Review, manage, and resolve neighbourhood incidents
+              </p>
+            </div>
+          </section>
 
-    {/* HOME BUTTON — LEFT */}
-    <Link
-      to="/"
-      className="absolute px-4 py-2 text-sm font-medium rounded-full shadow left-6 bg-white/70 backdrop-blur-md hover:bg-white"
-    >
-      Home
-    </Link>
-
-    {/* LOGO — CENTER */}
-    <Link to="/">
-      <img
-        src="/images/logo.png"
-        alt="ReportIt Logo"
-        className="w-auto cursor-pointer h-14 drop-shadow-md"
-      />
-    </Link>
-
-    {/* LOGOUT — RIGHT */}
-    <button
-      onClick={handleLogout}
-      className="absolute px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-full shadow right-6 hover:bg-red-700"
-    >
-      Logout
-    </button>
-  </div>
-</nav>
-
-
-        {/* ================= HEADER ================= */}
-        <section className="px-6 pt-32 text-center">
-          <div
-            className="max-w-4xl p-10 mx-auto shadow-xl bg-white/70 backdrop-blur-md rounded-3xl"
-          >
-            <h1 className="mb-3 text-4xl font-bold">
-              Admin Dashboard
-            </h1>
-            <p className="text-gray-700">
-              Review, manage, and resolve neighbourhood incidents
-            </p>
-          </div>
-        </section>
-
-        {/* ================= STATS ================= */}
-        <section className="px-6 mx-auto mt-16 max-w-7xl">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard title="Total" value={incidents.length} />
-            <StatCard title="Pending" value={pending.length} color="text-yellow-600" />
-            <StatCard title="In Action" value={actioning.length} color="text-orange-600" />
-            <StatCard title="Resolved" value={resolved.length} color="text-green-600" />
-          </div>
-        </section>
+          {/* ================= STATS ================= */}
+          <section className="px-6 mx-auto mt-16 max-w-7xl">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard title="Total" value={incidents.length} />
+              <StatCard title="Pending" value={pending.length} color="text-yellow-600" />
+              <StatCard title="In Action" value={actioning.length} color="text-orange-600" />
+              <StatCard title="Resolved" value={resolved.length} color="text-green-600" />
+            </div>
+          </section>
 
         {/* ================= INCIDENT LIST ================= */}
         <section className="px-6 py-20 mx-auto max-w-7xl">
@@ -426,347 +377,412 @@ useEffect(() => {
             </div>
           )}
         </section>
-<section className="max-w-4xl px-6 pb-20 mx-auto">
-  <div className="p-8 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
-    <h2 className="mb-4 text-2xl font-bold">
-      Post Community Guideline
-    </h2>
 
-    <input
-      placeholder="Title"
-      value={guideline.title}
-      onChange={(e) =>
-        setGuideline({ ...guideline, title: e.target.value })
-      }
-      className="w-full p-3 mb-3 border rounded-xl"
-    />
+        {/* ================= COMMUNITY GUIDELINES (2-COLUMN LAYOUT) ================= */}
+        <section className="px-6 py-16 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {/* LEFT — COMMUNITY UPDATES (LIST) */}
+            <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                📢 Community Updates
+              </h2>
 
-    <textarea
-      placeholder="Description"
-      value={guideline.description}
-      onChange={(e) =>
-        setGuideline({ ...guideline, description: e.target.value })
-      }
-      className="w-full p-3 mb-3 border rounded-xl"
-    />
-
-    <input
-      placeholder="Venue (optional)"
-      value={guideline.venue}
-      onChange={(e) =>
-        setGuideline({ ...guideline, venue: e.target.value })
-      }
-      className="w-full p-3 mb-4 border rounded-xl"
-    />
-    <input
-  type="date"
-  value={guideline.date}
-  onChange={(e) =>
-    setGuideline({ ...guideline, date: e.target.value })
-  }
-  className="w-full p-3 mb-3 border rounded-xl"
-/>
-
-<input
-  type="time"
-  value={guideline.time}
-  onChange={(e) =>
-    setGuideline({ ...guideline, time: e.target.value })
-  }
-  className="w-full p-3 mb-3 border rounded-xl"
-/>
-
-
-  <button
-  onClick={postGuideline}
-  className="px-6 py-2 text-white bg-black rounded-full"
->
-  Post Guideline
-</button>
-
-  </div>
-</section>
-
-<section className="max-w-5xl px-6 pb-32 mx-auto">
-  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
-    <h2 className="mb-6 text-2xl font-bold">
-      Manage Community Updates
-    </h2>
-
-    {guidelinesList.length === 0 ? (
-      <p className="text-gray-600">No community updates posted</p>
-    ) : (
-      <div className="space-y-5">
-        {guidelinesList.map((item) => (
-          <div
-            key={item._id}
-            className="flex items-start justify-between gap-6 p-5 bg-white shadow rounded-2xl"
-          >
-            <div>
-              <h3 className="text-lg font-semibold">
-                {item.title}
-              </h3>
-
-              <p className="mt-1 text-sm text-gray-700">
-                {item.description}
-              </p>
-
-              {item.venue && (
-                <p className="mt-1 text-sm text-gray-600">
-                  📍 {item.venue}
-                </p>
+              {guidelinesList.length === 0 ? (
+                <p className="text-gray-600">No community updates posted yet</p>
+              ) : (
+                <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                  {guidelinesList.map((item) => (
+                    <div
+                      key={item._id}
+                      className="p-5 transition border border-gray-200 rounded-2xl bg-white/50 hover:bg-white/80"
+                    >
+                      <h3 className="font-semibold text-gray-900">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2 text-sm text-gray-700">
+                        {item.description.substring(0, 100)}...
+                      </p>
+                      {item.venue && (
+                        <p className="mt-2 text-sm text-gray-600">
+                          📍 {item.venue}
+                        </p>
+                      )}
+                      <p className="mt-2 text-xs text-gray-500">
+                        📅 {new Date(item.eventDateTime).toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => deleteGuideline(item._id)}
+                        className="px-4 py-2 mt-3 text-sm text-white transition bg-red-600 rounded-lg hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-
-              <p className="mt-2 text-xs text-gray-500">
-                📅 {new Date(item.eventDateTime).toLocaleString()}
-              </p>
             </div>
 
-            <button
-              onClick={() => deleteGuideline(item._id)}
-              className="px-4 py-2 text-white transition bg-red-600 rounded-full hover:bg-red-700"
-            >
-              Delete
-            </button>
+            {/* RIGHT — POST COMMUNITY GUIDELINE (FORM) */}
+            <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                ✏️ Post Community Guideline
+              </h2>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Title
+                  </label>
+                  <input
+                    placeholder="Enter guideline title"
+                    value={guideline.title}
+                    onChange={(e) =>
+                      setGuideline({ ...guideline, title: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Description
+                  </label>
+                  <textarea
+                    placeholder="Enter guideline description"
+                    value={guideline.description}
+                    onChange={(e) =>
+                      setGuideline({ ...guideline, description: e.target.value })
+                    }
+                    rows="4"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Venue (Optional)
+                  </label>
+                  <input
+                    placeholder="Enter venue"
+                    value={guideline.venue}
+                    onChange={(e) =>
+                      setGuideline({ ...guideline, venue: e.target.value })
+                    }
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block mb-2 text-sm font-semibold text-gray-900">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      value={guideline.date}
+                      onChange={(e) =>
+                        setGuideline({ ...guideline, date: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block mb-2 text-sm font-semibold text-gray-900">
+                      Time
+                    </label>
+                    <input
+                      type="time"
+                      value={guideline.time}
+                      onChange={(e) =>
+                        setGuideline({ ...guideline, time: e.target.value })
+                      }
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={postGuideline}
+                  className="w-full px-6 py-3 font-semibold text-white transition rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+                >
+                  Post Guideline
+                </button>
+              </div>
+            </div>
           </div>
-        ))}
+        </section>
+
+        {/* ================= COMMUNITY EVENTS (2-COLUMN LAYOUT) ================= */}
+        <section className="px-6 py-16 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {/* LEFT — MANAGE EVENTS (LIST) */}
+            <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                📅 Manage Events
+              </h2>
+
+              {events.length === 0 ? (
+                <p className="text-gray-600">No events posted yet</p>
+              ) : (
+                <div className="space-y-4 max-h-[600px] overflow-y-auto">
+                  {events.map((event) => (
+                    <div
+                      key={event._id}
+                      className="p-5 transition border border-gray-200 rounded-2xl bg-white/50 hover:bg-white/80"
+                    >
+                      <p className="font-semibold text-gray-900">
+                        {event.title} ({event.category})
+                      </p>
+                      <p className="mt-1 text-sm text-gray-700">
+                        {event.description?.substring(0, 80)}...
+                      </p>
+                      <p className="mt-2 text-sm text-gray-600">
+                        📍 {event.venue}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        📅 {new Date(event.eventDateTime).toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => deleteEvent(event._id)}
+                        className="px-4 py-2 mt-3 text-sm text-white transition bg-red-600 rounded-lg hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — ADD COMMUNITY EVENT (FORM) */}
+            <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                ✨ Add Community Event
+              </h2>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={eventData.category}
+                    onChange={handleEventChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                    required
+                  >
+                    <option value="">Select Event Category</option>
+                    <option value="Dance">Dance</option>
+                    <option value="Concert">Concert</option>
+                    <option value="Lunch">Lunch</option>
+                    <option value="Urgent Meeting">Urgent Meeting</option>
+                    <option value="Festival">Festival</option>
+                    <option value="Casual Gathering">Casual Gathering</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Title
+                  </label>
+                  <input
+                    name="title"
+                    placeholder="Event title"
+                    value={eventData.title}
+                    onChange={handleEventChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Venue
+                  </label>
+                  <input
+                    name="venue"
+                    placeholder="Venue"
+                    value={eventData.venue}
+                    onChange={handleEventChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    placeholder="Event description"
+                    value={eventData.description}
+                    onChange={handleEventChange}
+                    rows="4"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-2 text-sm font-semibold text-gray-900">
+                    Date & Time
+                  </label>
+                  <input
+                    type="datetime-local"
+                    name="eventDateTime"
+                    value={eventData.eventDateTime}
+                    onChange={handleEventChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white/90"
+                  />
+                </div>
+
+                <button
+                  onClick={createEvent}
+                  className="w-full px-6 py-3 font-semibold text-white transition rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+                >
+                  Post Event
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* ================= QUERIES & PASSWORD RESET (2-COLUMN LAYOUT) ================= */}
+        <section className="px-6 py-16 mx-auto max-w-7xl">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            {/* LEFT — MESSAGES & QUERIES */}
+            <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                💬 Messages & Queries
+              </h2>
+
+              {messages.length === 0 ? (
+                <p className="text-gray-600">No messages received</p>
+              ) : (
+                <div className="space-y-4 max-h-[700px] overflow-y-auto">
+                  {messages.map((msg) => (
+                    <div
+                      key={msg._id}
+                      className="p-5 transition border border-gray-200 rounded-2xl bg-white/50 hover:bg-white/80"
+                    >
+                      <p className="font-semibold text-gray-900">
+                        {msg.sentBy?.name}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-600">
+                        📞 {msg.sentBy?.phone} • 🏠 {msg.sentBy?.society}
+                      </p>
+                      <p className="mt-3 text-sm text-gray-700">
+                        {msg.message}
+                      </p>
+                      <p className="mt-2 text-xs text-gray-500">
+                        {new Date(msg.createdAt).toLocaleString()}
+                      </p>
+                      <button
+                        onClick={() => deleteMessage(msg._id)}
+                        className="px-4 py-2 mt-3 text-sm text-white transition bg-red-600 rounded-lg hover:bg-red-700"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — PASSWORD RESET REQUESTS */}
+            <div className="p-10 border shadow-2xl bg-white/95 backdrop-blur-xl rounded-3xl border-white/20">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900">
+                🔐 Password Reset Requests
+              </h2>
+
+              {resetRequests.length === 0 ? (
+                <p className="text-gray-600">No pending reset requests</p>
+              ) : (
+                <div className="space-y-4 max-h-[700px] overflow-y-auto">
+                  {/* PENDING REQUESTS */}
+                  {resetRequests.filter(req => req.status === "pending").length > 0 && (
+                    <>
+                      <div className="mb-4">
+                        <h3 className="mb-3 font-semibold text-yellow-700">⏳ Pending Requests</h3>
+                        <div className="space-y-3">
+                          {resetRequests.filter(req => req.status === "pending").map((req) => (
+                            <div
+                              key={req._id}
+                              className="p-4 border border-yellow-200 rounded-2xl bg-yellow-50/50"
+                            >
+                              <p className="font-semibold text-gray-900">{req.name}</p>
+                              <p className="mt-1 text-sm text-gray-600">📞 {req.phone}</p>
+                              <p className="mt-2 text-xs text-gray-700">Reason: {req.reason}</p>
+                              <p className="mt-1 text-xs text-gray-500">
+                                Requested: {new Date(req.createdAt).toLocaleDateString()}
+                              </p>
+                              <div className="flex gap-2 mt-3">
+                                <button
+                                  onClick={async () => {
+                                    try {
+                                      await axios.put(
+                                        `http://localhost:5000/api/password/reset-requests/${req._id}/approve`,
+                                        { remarks: "" },
+                                        { headers: { Authorization: `Bearer ${token}` } }
+                                      );
+                                      alert("Request approved");
+                                      fetchResetRequests();
+                                    } catch (err) {
+                                      alert(err.response?.data?.message || "Failed to approve");
+                                    }
+                                  }}
+                                  className="flex-1 px-3 py-2 text-sm text-white transition bg-green-600 rounded-lg hover:bg-green-700"
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={async () => {
+                                    const remarks = prompt("Rejection reason (optional):");
+                                    try {
+                                      await axios.put(
+                                        `http://localhost:5000/api/password/reset-requests/${req._id}/reject`,
+                                        { remarks: remarks || "" },
+                                        { headers: { Authorization: `Bearer ${token}` } }
+                                      );
+                                      alert("Request rejected");
+                                      fetchResetRequests();
+                                    } catch (err) {
+                                      alert(err.response?.data?.message || "Failed to reject");
+                                    }
+                                  }}
+                                  className="flex-1 px-3 py-2 text-sm text-white transition bg-red-600 rounded-lg hover:bg-red-700"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* APPROVED REQUESTS */}
+                  {resetRequests.filter(req => req.status === "approved").length > 0 && (
+                    <div className="mt-6">
+                      <h3 className="mb-3 font-semibold text-green-700">✅ Approved</h3>
+                      <div className="space-y-2">
+                        {resetRequests.filter(req => req.status === "approved").map((req) => (
+                          <div key={req._id} className="p-3 border border-green-200 rounded-lg bg-green-50/50">
+                            <p className="text-sm font-semibold text-gray-900">{req.name}</p>
+                            <p className="text-xs text-gray-600">Password updated • By: {req.approvedBy}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
       </div>
-    )}
-  </div>
-</section>
-
-{/* ================= ADD COMMUNITY EVENT ================= */}
-<section className="max-w-4xl px-6 pb-24 mx-auto">
-  <div
-    className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl"
-  >
-    <h2 className="mb-6 text-2xl font-bold">
-      Add Community Event
-    </h2>
-
-    <div className="space-y-4">
-    <select
-  name="category"
-  value={eventData.category}
-  onChange={handleEventChange}
-  className="w-full px-4 py-3 bg-white border rounded-xl focus:outline-none"
-  required
->
-  <option value="">Select Event Category</option>
-  <option value="Dance">Dance</option>
-  <option value="Concert">Concert</option>
-  <option value="Lunch">Lunch</option>
-  <option value="Urgent Meeting">Urgent Meeting</option>
-  <option value="Festival">Festival</option>
-  <option value="Casual Gathering">Casual Gathering</option>
-</select>
-
-      <input
-        name="title"
-        placeholder="Event title"
-        value={eventData.title}
-        onChange={handleEventChange}
-        className="w-full px-4 py-3 border rounded-xl"
-      />
-
-      <input
-        name="venue"
-        placeholder="Venue"
-        value={eventData.venue}
-        onChange={handleEventChange}
-        className="w-full px-4 py-3 border rounded-xl"
-      />
-
-      <textarea
-        name="description"
-        placeholder="Event description"
-        value={eventData.description}
-        onChange={handleEventChange}
-        className="w-full px-4 py-3 border rounded-xl"
-      />
-
-     <input
-  type="datetime-local"
-  name="eventDateTime"
-  value={eventData.eventDateTime}
-  onChange={handleEventChange}
-  className="w-full px-4 py-3 border rounded-xl"
-/>
-
-
-      <button
-        onClick={createEvent}
-        className="px-6 py-3 text-white transition bg-black rounded-full hover:bg-gray-900"
-      >
-        Post Event
-      </button>
     </div>
-  </div>
-</section>
-<section className="max-w-5xl px-6 pb-32 mx-auto">
-  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
-    <h2 className="mb-6 text-2xl font-bold">
-      Manage Events
-    </h2>
-
-    {events.length === 0 ? (
-      <p className="text-gray-600">No events posted</p>
-    ) : (
-      <div className="space-y-5">
-        {events.map((event) => (
-          <div
-            key={event._id}
-            className="flex items-center justify-between p-5 bg-white shadow rounded-2xl"
-          >
-            <div>
-              <p className="font-semibold">
-                {event.title} ({event.category})
-              </p>
-              <p className="text-sm text-gray-600">
-                📅 {new Date(event.eventDateTime).toLocaleString()}
-              </p>
-              <p className="text-sm text-gray-600">
-                📍 {event.venue}
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => deleteEvent(event._id)}
-                className="px-4 py-2 text-white bg-red-600 rounded-full"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</section>
-<section className="max-w-6xl px-6 pb-32 mx-auto">
-  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
-    <h2 className="mb-6 text-2xl font-bold">
-      Messages & Queries Received
-    </h2>
-
-    {messages.length === 0 ? (
-      <p className="text-gray-600">No messages received</p>
-    ) : (
-      <div className="space-y-6">
-        {messages.map((msg) => (
-          <div
-            key={msg._id}
-            className="flex flex-col gap-4 p-6 bg-white shadow rounded-2xl md:flex-row md:justify-between"
-          >
-            {/* MESSAGE CONTENT */}
-            <div>
-              <p className="mb-1 text-lg font-semibold">
-                {msg.sentBy?.name}
-              </p>
-
-              <p className="mb-2 text-sm text-gray-600">
-                📞 {msg.sentBy?.phone} • 🏠 {msg.sentBy?.society}
-              </p>
-
-              <p className="text-gray-800">
-                {msg.message}
-              </p>
-
-              <p className="mt-2 text-xs text-gray-500">
-                {new Date(msg.createdAt).toLocaleString()}
-              </p>
-            </div>
-
-            {/* ACTION */}
-            <div className="flex items-start">
-              <button
-                onClick={() => deleteMessage(msg._id)}
-                className="px-4 py-2 text-white bg-red-600 rounded-full hover:bg-red-700"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</section>
-
-
-{/* ================= PASSWORD RESET REQUESTS ================= */}
-<section className="max-w-5xl px-6 pb-32 mx-auto">
-  <div className="p-10 shadow-xl bg-white/70 backdrop-blur-md rounded-3xl">
-    <h2 className="mb-6 text-2xl font-bold">
-      Pending Password Reset Requests
-    </h2>
-
-    {resetRequests.length === 0 ? (
-      <p className="text-gray-600">
-        No pending password reset requests
-      </p>
-    ) : (
-      <div className="space-y-6">
-        {resetRequests.map((req) => (
-          <div
-            key={req._id}
-            className="flex flex-col justify-between gap-4 p-6 bg-white shadow rounded-2xl md:flex-row md:items-center"
-          >
-            {/* USER INFO */}
-            <div>
-              <p className="text-lg font-semibold">
-                {req.user.name}
-              </p>
-              <p className="text-sm text-gray-600">
-                Role: {req.role}
-              </p>
-              <p className="text-sm text-gray-600">
-                📞 {req.phone}
-              </p>
-            </div>
-
-
-            {/* PASSWORD INPUT */}
-           <div className="relative">
-  <input
-    type={showNewPassword ? "text" : "password"}
-    placeholder="New Password"
-    value={newPassword}
-    onChange={(e) => setNewPassword(e.target.value)}
-    className="w-full px-4 py-3 pr-12 border rounded-xl"
-  />
-
-  <button
-    type="button"
-    onClick={() => setShowNewPassword(!showNewPassword)}
-    className="absolute text-sm text-gray-600 -translate-y-1/2 right-4 top-1/2 hover:text-black"
-  >
-    {showNewPassword ? "🙈" : "👁️"}
-  </button>
-</div>
-
-            {/* ACTION */}
-            <button
-              onClick={() =>
-                resetUserPassword(req._id, req.phone)
-              }
-              className="px-6 py-3 text-white bg-black rounded-full"
-            >
-              Reset Password
-            </button>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</section>
-
-
-
-
-      </div>
-    </div>
+    </>
   );
 }
 

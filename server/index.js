@@ -13,6 +13,7 @@ const eventRoutes = require("./routes/eventRoutes");
 const guidelineRoutes = require("./routes/communityGuidelineRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const passwordResetRoutes = require("./routes/passwordResetRoutes");
 
 const app = express();
 
@@ -80,6 +81,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/guidelines", guidelineRoutes);
 app.use("/api/contact", contactRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/password", passwordResetRoutes);
 
 // Start server
 const PORT = process.env.PORT || 5000;

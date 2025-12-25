@@ -5,9 +5,11 @@ import {
   Navigate
 } from "react-router-dom";
 
+import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import Members from "./pages/Members";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -27,10 +29,12 @@ const ProtectedRoute = ({ children, role }) => {
 function AppContent() {
   return (
     <>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/members" element={<Members />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
