@@ -1,9 +1,13 @@
 import axios from "axios";
 
-// Use environment variable if available, otherwise default to localhost
-const API_BASE_URL = import.meta.env.VITE_API_URL 
-  ? `${import.meta.env.VITE_API_URL}/api` 
-  : "http://localhost:5000/api";
+// API URL Configuration for Vercel deployment
+// In production (Vercel), use relative path to serverless functions
+// In development, use localhost
+const API_BASE_URL = import.meta.env.PROD 
+  ? "/api"  // Production: relative path on Vercel
+  : import.meta.env.VITE_API_URL 
+    ? `${import.meta.env.VITE_API_URL}/api` 
+    : "http://localhost:5000/api"; // Development: localhost
 
 const api = axios.create({
   baseURL: API_BASE_URL
